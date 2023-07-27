@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.nn import functional as F
 import numpy as np
 
-from gymnasium import spaces
+from gym import spaces
 
 from typing import Union, List, Any, Dict, Optional, NamedTuple, Type
 
@@ -14,7 +14,7 @@ from stable_baselines3.common.buffers import ReplayBuffer
 from stable_baselines3.common.policies import BasePolicy, ActorCriticPolicy
 from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
 
-from policies.awr_policy import AWRPolicy, CnnPolicy, MlpPolicy
+from policies.awr_policy import AWRPolicy
 
 
 ACTIVATION = {'relu': nn.ReLU, 'tanh': nn.Tanh}
