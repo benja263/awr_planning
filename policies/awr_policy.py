@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 import numpy as np
 import torch as th
-from gymnasium import spaces
+from gym import spaces
 from stable_baselines3.common.distributions import (
     BernoulliDistribution, CategoricalDistribution, DiagGaussianDistribution,
     Distribution, MultiCategoricalDistribution,
