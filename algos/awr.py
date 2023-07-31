@@ -95,17 +95,17 @@ class AWR(OffPolicyAlgorithm):
         self.epochs = 0
 
 
-    def get_values(self, observations: np.ndarray, next_observations: np.ndarray, batch_size: int =8192) -> np.ndarray:
+    def get_values(self, observations: np.ndarray, next_observations: np.ndarray, batch_size: int =2048) -> np.ndarray:
         n_samples, n_envs = observations.shape[0], observations.shape[1]
         values = np.zeros((n_samples, n_envs), dtype=np.float32)
         next_values = np.zeros((n_samples, n_envs), dtype=np.float32)
-        print(f"n_samples: {n_samples}, batch_size: {batch_size}")
+        # print(f"n_samples: {n_samples}, batch_size: {batch_size}")
         for env_idx in range(n_envs):
             for i in range(0, n_samples, batch_size):
                 # print(f"i: {i}")
                 batch_obs = self.replay_buffer.to_torch(observations[i:i+batch_size, env_idx])
                 batch_next_obs = self.replay_buffer.to_torch(next_observations[i:i+batch_size, env_idx])
-                print(f"obs shape: {batch_obs.shape}")
+                # print(f"obs shape: {batch_obs.shape}")
                 torch_values = self.policy.predict_values(batch_obs)
                 torch_next_values = self.policy.predict_values(batch_next_obs)
                 
