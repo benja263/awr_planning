@@ -72,6 +72,7 @@ class AWR(OffPolicyAlgorithm):
         tr_freq = TrainFreq(n_steps // n_envs, TrainFrequencyUnit.STEP)
         super().__init__(policy=policy,
         env=env,
+        policy_base=None,
         replay_buffer_class=AWRReplayBuffer,
         support_multi_env=True,
         tensorboard_log=tensorboard_log,
