@@ -146,7 +146,7 @@ class AWR(OffPolicyAlgorithm):
         observations = observations[:self.replay_buffer.valid_pos]
         next_observations = next_observations[:self.replay_buffer.valid_pos]
 
-        values, next_values = self.get_values(observations, next_observations, batch_size)
+        values, next_values = self.get_values(observations, next_observations)
         self.replay_buffer.add_advantages_returns(values, next_values, env=self._vec_normalize_env)
 
         value_losses = []
