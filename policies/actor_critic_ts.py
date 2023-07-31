@@ -248,6 +248,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             all_first_actions.append(first_action)
         all_rewards_th = th.cat(all_rewards).reshape([-1, 1])
         val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
+        print(th.cat(all_leaves_obs, dim=0).shape)
         cat_features = self.extract_features(th.cat(all_leaves_obs, dim=0))
         shared_features = self.mlp_extractor.shared_net(cat_features)
         if self.use_leaves_v:
