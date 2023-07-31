@@ -298,16 +298,16 @@ class AWRReplayBuffer(ReplayBuffer):
         action = action.reshape((self.n_envs, self.action_dim))
 
         # Copy to avoid modification by reference
-        self.observations[self.pos] = np.array(obs).copy()
+        self.observations[self.pos] = np.array(obs.cpu()).copy()
 
         if self.optimize_memory_usage:
             self.observations[(self.pos + 1) % self.buffer_size] = np.array(next_obs).copy()
         else:
             self.next_observations[self.pos] = np.array(next_obs).copy()
 
-        self.actions[self.pos] = np.array(action).copy()
-        self.rewards[self.pos] = np.array(reward).copy()
-        self.dones[self.pos] = np.array(done).copy()
+        self.actions[self.pos] = np.array(action.cpu()).copy()
+        self.rewards[self.pos] = np.array(reward.cpu()).copy()
+        self.dones[self.pos] = np.array(done.cpu()).copy()
 
         if self.handle_timeout_termination:
             self.timeouts[self.pos] = np.array([info.get("TimeLimit.truncated", False) for info in infos])
