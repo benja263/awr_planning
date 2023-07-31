@@ -65,7 +65,11 @@ class AWR(OffPolicyAlgorithm):
         self.max_grad_norm = max_grad_norm
         self.normalize_advantage = normalize_advantage
 
-        tr_freq = TrainFreq(n_steps // env.num_envs, TrainFrequencyUnit.STEP)
+        try:
+            n_envs = env.num_envs
+        except AttributeError:
+            n_envs = 1
+        tr_freq = TrainFreq(n_steps // n_envs, TrainFrequencyUnit.STEP)
         super().__init__(policy=policy,
         env=env,
         replay_buffer_class=AWRReplayBuffer,
