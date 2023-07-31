@@ -47,6 +47,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         :param deterministic: Whether to sample or use deterministic actions
         :return: action, value and log probability of the action
         """
+        print(f"forward: obs.shape: {obs.shape}")
         hash_obs = self.hash_obs(obs)[0].item()
         if hash_obs in self.obs2leaves_dict:
             leaves_observations, rewards, first_action = self.obs2leaves_dict.get(hash_obs)
@@ -224,6 +225,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         :param obs: Observation
         :return: value
         """
+        print(f"predict_values: obs.shape: {obs.shape}")
         batch_size = obs.shape[0]
         ret_values = th.zeros((batch_size, 1), device=obs.device)
         hash_obses = self.hash_obs(obs)
