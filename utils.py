@@ -88,6 +88,7 @@ def create_parser():
                         help="True for Cumulative SoftTreeMax. False for Exponentiated SoftTreeMax")
     parser.add_argument("--regularization", type=float, default=0.001, help="Minimal probability for all actions")
     parser.add_argument("--n_envs", type=int, default=256, help="Number of parallel PPO environments on GPU")
+    parser.add_argument("--value_batch_size", type=int, default=64, help="Batch size used to calculate values")
     # Evaluation fields
     parser.add_argument("--run_type", type=str, default="train", help="Train or evaluate")  # train or evaluate
     parser.add_argument("--model_filename", type=str, default=None, help="Filename to store or load model")
