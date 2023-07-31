@@ -306,11 +306,11 @@ class AWRReplayBuffer(ReplayBuffer):
             self.observations[(self.pos + 1) % self.buffer_size] = np.array(next_obs).copy()
         else:
             self.next_observations[self.pos] = np.array(next_obs).copy()
-        if isinstance(obs, th.Tensor):
+        if isinstance(action, th.Tensor):
             action = action.cpu()
-        if isinstance(obs, th.Tensor):
+        if isinstance(reward, th.Tensor):
             reward = reward.cpu()
-        if isinstance(obs, th.Tensor):
+        if isinstance(done, th.Tensor):
             done = done.cpu()
         self.actions[self.pos] = np.array(action).copy()
         self.rewards[self.pos] = np.array(reward).copy()
