@@ -95,7 +95,7 @@ class AWR(OffPolicyAlgorithm):
         self.epochs = 0
 
 
-    def get_values(self, observations: np.ndarray, next_observations: np.ndarray, batch_size: int =2048) -> np.ndarray:
+    def get_values(self, observations: np.ndarray, next_observations: np.ndarray, batch_size: int =512) -> np.ndarray:
         n_samples, n_envs = observations.shape[0], observations.shape[1]
         values = np.zeros((n_samples, n_envs), dtype=np.float32)
         next_values = np.zeros((n_samples, n_envs), dtype=np.float32)
