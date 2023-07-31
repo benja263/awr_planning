@@ -139,7 +139,7 @@ class AWR(OffPolicyAlgorithm):
         # observations = self.replay_buffer.to_torch(observations)
         next_observations = self.replay_buffer._normalize_obs(self.replay_buffer.next_observations, env)
         # next_observations = self.replay_buffer.to_torch(next_observations)
-        print(f"replay buffer: {self.replay_buffer.valid_pos}")
+        print(f"replay buffer: {self.replay_buffer.valid_pos}, pos: {self.replay_buffer.pos}")
         observations = observations[:self.replay_buffer.valid_pos]
         next_observations = next_observations[:self.replay_buffer.valid_pos]
 
