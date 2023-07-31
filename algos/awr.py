@@ -36,7 +36,7 @@ class AWR(OffPolicyAlgorithm):
             ent_coef: float = 0.0,
             weights_max: float = 20,
             learning_starts: int = 100,
-            max_grad_norm: float = 0.5,
+            max_grad_norm: float = 0.0,
             buffer_size: int = 100000,
             policy_gradient_steps: int=1000,
             value_gradient_steps: int=250,
@@ -190,7 +190,7 @@ class AWR(OffPolicyAlgorithm):
 
             values, log_prob, entropy = self.policy.evaluate_actions(replay_data.observations, actions)
 
-            policy_loss = -(log_prob*weights).mean() + self.ent_coef*th.mean(entropy)
+            policy_loss = -(log_prob*weights).mean() - self.ent_coef*th.mean(entropy)
 
             # if self.policy_bound_loss_weight > 0 and isinstance(self.action_space, spaces.Box):
             #     distrib = self.policy.actor.get_distribution(replay_data.observations)
