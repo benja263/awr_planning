@@ -187,7 +187,7 @@ class AWR(OffPolicyAlgorithm):
 
             values, log_prob, entropy = self.policy.evaluate_actions(replay_data.observations, actions)
 
-            policy_loss = -(log_prob*weights).mean() + self.ent_coef*entropy
+            policy_loss = -(log_prob*weights).mean() + self.ent_coef*th.mean(entropy)
 
             # if self.policy_bound_loss_weight > 0 and isinstance(self.action_space, spaces.Box):
             #     distrib = self.policy.actor.get_distribution(replay_data.observations)
