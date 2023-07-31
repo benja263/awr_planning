@@ -44,6 +44,7 @@ class AWR(OffPolicyAlgorithm):
             tensorboard_log: Optional[str] = None,
             policy_kwargs: Optional[Dict[str, Any]] = None,
             verbose: int = 0,
+            value_batch_size: int = 512,
             normalize_advantage: bool = False,
             seed: Optional[int] = None,
             device: Union[th.device, str] = "auto",
@@ -93,24 +94,25 @@ class AWR(OffPolicyAlgorithm):
         self.bound_min = self.get_action_bound_min()
         self.bound_max = self.get_action_bound_max()
         self.epochs = 0
+        self.value_batch_size = value_batch_size
 
 
-    def get_values(self, observations: np.ndarray, next_observations: np.ndarray, batch_size: int =512) -> np.ndarray:
+    def get_values(self, observations: np.ndarray, next_observations: np.ndarray) -> np.ndarray:
         n_samples, n_envs = observations.shape[0], observations.shape[1]
         values = np.zeros((n_samples, n_envs), dtype=np.float32)
         next_values = np.zeros((n_samples, n_envs), dtype=np.float32)
         # print(f"n_samples: {n_samples}, batch_size: {batch_size}")
         for env_idx in range(n_envs):
-            for i in range(0, n_samples, batch_size):
+            for i in range(0, n_samples, self.value_batch_size):
                 # print(f"i: {i}")
-                batch_obs = self.replay_buffer.to_torch(observations[i:i+batch_size, env_idx])
-                batch_next_obs = self.replay_buffer.to_torch(next_observations[i:i+batch_size, env_idx])
+                batch_obs = self.replay_buffer.to_torch(observations[i:i+self.value_batch_size, env_idx])
+                batch_next_obs = self.replay_buffer.to_torch(next_observations[i:i+self.value_batch_size, env_idx])
                 # print(f"obs shape: {batch_obs.shape}")
                 torch_values = self.policy.predict_values(batch_obs)
                 torch_next_values = self.policy.predict_values(batch_next_obs)
                 
-                values[i:i+batch_size, env_idx] = torch_values.detach().cpu().numpy().squeeze()
-                next_values[i:i+batch_size, env_idx] = torch_next_values.detach().cpu().numpy().squeeze()
+                values[i:i+self.value_batch_size, env_idx] = torch_values.detach().cpu().numpy().squeeze()
+                next_values[i:i+self.value_batch_size, env_idx] = torch_next_values.detach().cpu().numpy().squeeze()
         return values, next_values
 
     def get_action_bound_min(self):
