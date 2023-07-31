@@ -225,7 +225,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         :param obs: Observation
         :return: value
         """
-        print(f"predict_values: obs.shape: {obs.shape}")
+        # print(f"predict_values: obs.shape: {obs.shape}")
         batch_size = obs.shape[0]
         ret_values = th.zeros((batch_size, 1), device=obs.device)
         hash_obses = self.hash_obs(obs)
@@ -237,10 +237,10 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             if hash_obs in self.obs2leaves_dict:
                 leaves_observations, rewards, first_action = self.obs2leaves_dict.get(hash_obs)
             else:
-                print(f"currently have {len(self.obs2leaves_dict)} obs in leaves")
-                print(f"hash_obs: {hash_obs}, keys: {self.obs2leaves_dict.keys()}")
-                print("This should not happen! observation not in our dictionary")
-                leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs, self.cule_bfs.max_depth)
+                # print(f"currently have {len(self.obs2leaves_dict)} obs in leaves")
+                # print(f"hash_obs: {hash_obs}, keys: {self.obs2leaves_dict.keys()}")
+                # print("This should not happen! observation not in our dictionary")
+                leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs[i], self.cule_bfs.max_depth)
                 self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
             all_leaves_obs.append(leaves_observations)
             all_rewards.append(rewards)
