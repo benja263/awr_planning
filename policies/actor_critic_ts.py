@@ -236,6 +236,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
                 leaves_observations, rewards, first_action = self.obs2leaves_dict.get(hash_obs)
             else:
                 print(f"currently have {len(self.obs2leaves_dict)} obs in leaves")
+                print(f"hash_obs: {hash_obs}, keys: {self.obs2leaves_dict.keys()}")
                 print("This should not happen! observation not in our dictionary")
                 leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs, self.cule_bfs.max_depth)
                 self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
