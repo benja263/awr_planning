@@ -65,6 +65,7 @@ def main():
                          "buffer_size": hash_buffer_size, "learn_alpha": config.learn_alpha,
                          "learn_beta": config.learn_beta, "max_width": max_width, "use_leaves_v": config.use_leaves_v,
                          "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
+        AWR_params['buffer_size'] = hash_buffer_size
         model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=1, policy_kwargs=policy_kwargs, **AWR_params)
 
     # save agent folder and name
