@@ -157,7 +157,7 @@ class AWR(OffPolicyAlgorithm):
             self.policy.optimizer.zero_grad()
             value_loss.backward()
             if self.max_grad_norm > 0.0:
-                nn.utils.clip_grad_norm_(self.policy.predict_values.parameters(), self.max_grad_norm)
+                nn.utils.clip_grad_norm_(self.policy.parameters(), self.max_grad_norm)
 
             self.policy.optimizer.step()
             value_losses.append(value_loss.item())
@@ -189,18 +189,18 @@ class AWR(OffPolicyAlgorithm):
 
             policy_loss = -(log_prob*weights).mean() + self.ent_coef*entropy
 
-            if self.policy_bound_loss_weight > 0 and isinstance(self.action_space, spaces.Box):
-                distrib = self.policy.actor.get_distribution(replay_data.observations)
-                val = distrib.mode()
-                vio_min = th.clamp(val - self.bound_min, max=0)
-                vio_max = th.clamp(val - self.bound_max, min=0)
-                violation = vio_min.pow_(2).sum(axis=-1) + vio_max.pow_(2).sum(axis=-1)
-                policy_loss += 0.5 * th.mean(violation)
+            # if self.policy_bound_loss_weight > 0 and isinstance(self.action_space, spaces.Box):
+            #     distrib = self.policy.actor.get_distribution(replay_data.observations)
+            #     val = distrib.mode()
+            #     vio_min = th.clamp(val - self.bound_min, max=0)
+            #     vio_max = th.clamp(val - self.bound_max, min=0)
+            #     violation = vio_min.pow_(2).sum(axis=-1) + vio_max.pow_(2).sum(axis=-1)
+            #     policy_loss += 0.5 * th.mean(violation)
 
             self.policy.optimizer.zero_grad()
             policy_loss.backward()
             if self.max_grad_norm > 0.0:
-                nn.utils.clip_grad_norm_(self.policy.actor.parameters(), self.max_grad_norm)
+                nn.utils.clip_grad_norm_(self.policy.parameters(), self.max_grad_norm)
             self.policy.optimizer.step()
 
             policy_losses.append(policy_loss.item())
