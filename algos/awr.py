@@ -49,7 +49,7 @@ class AWR(OffPolicyAlgorithm):
             device: Union[th.device, str] = "auto",
     ):
 
-        policy_kwargs['activation_fn'] = ACTIVATION[policy_kwargs['activation_fn']]
+        policy_kwargs['activation_fn'] = 'relu' if policy_kwargs is None else ACTIVATION[policy_kwargs.get('activation_fn', 'relu')]
         
         optimizer_class = policy_kwargs.get('optimizer_class', None)
         if optimizer_class is not None:
@@ -98,8 +98,8 @@ class AWR(OffPolicyAlgorithm):
             for i in range(0, n_samples, batch_size):
                 batch_obs = self.replay_buffer.to_torch(observations[i:i+batch_size, env_idx])
                 batch_next_obs = self.replay_buffer.to_torch(next_observations[i:i+batch_size, env_idx])
-                torch_values = self.policy.critic(batch_obs)
-                torch_next_values = self.policy.critic(batch_next_obs)
+                torch_values = self.policy.predict_values(batch_obs)
+                torch_next_values = self.policy.predict_values(batch_next_obs)
                 
                 values[i:i+batch_size, env_idx] = torch_values.detach().cpu().numpy().squeeze()
                 next_values[i:i+batch_size, env_idx] = torch_next_values.detach().cpu().numpy().squeeze()
@@ -144,15 +144,15 @@ class AWR(OffPolicyAlgorithm):
             # Sample replay buffer
             replay_data = self.replay_buffer.sample(batch_size, env=self._vec_normalize_env)  # type: ignore[union-attr]
 
-            pred_values = self.policy.critic(replay_data.observations)
+            pred_values = self.policy.predict_values(replay_data.observations)
 
             value_loss = 0.5*F.mse_loss(pred_values, replay_data.returns)
-            self.policy.critic.optimizer.zero_grad()
+            self.policy.optimizer.zero_grad()
             value_loss.backward()
             if self.max_grad_norm > 0.0:
-                nn.utils.clip_grad_norm_(self.policy.critic.parameters(), self.max_grad_norm)
+                nn.utils.clip_grad_norm_(self.policy.predict_values.parameters(), self.max_grad_norm)
 
-            self.policy.critic.optimizer.step()
+            self.policy.optimizer.step()
             value_losses.append(value_loss.item())
 
 
@@ -178,9 +178,7 @@ class AWR(OffPolicyAlgorithm):
             weights = th.exp(advantages / self.beta)
             weights = th.clamp(weights, max=self.weights_max)
 
-            log_prob = self.policy.actor.action_log_prob(replay_data.observations, actions)
-
-            entropy = -th.mean(-log_prob)
+            values, log_prob, entropy = self.policy.evaluate_actions(replay_data.observations, actions)
 
             policy_loss = -(log_prob*weights).mean() + self.ent_coef*entropy
 
@@ -192,11 +190,11 @@ class AWR(OffPolicyAlgorithm):
                 violation = vio_min.pow_(2).sum(axis=-1) + vio_max.pow_(2).sum(axis=-1)
                 policy_loss += 0.5 * th.mean(violation)
 
-            self.policy.actor.optimizer.zero_grad()
+            self.policy.optimizer.zero_grad()
             policy_loss.backward()
             if self.max_grad_norm > 0.0:
                 nn.utils.clip_grad_norm_(self.policy.actor.parameters(), self.max_grad_norm)
-            self.policy.actor.optimizer.step()
+            self.policy.optimizer.step()
 
             policy_losses.append(policy_loss.item())
 

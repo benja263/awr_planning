@@ -4,6 +4,7 @@ from typing import Tuple
 # Externals
 import torch as th
 from stable_baselines3.common.policies import ActorCriticCnnPolicy
+from policies.awr_policy import AWRPolicy
 
 
 class ActorCriticCnnPolicyDepth0(ActorCriticCnnPolicy):

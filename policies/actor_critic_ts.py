@@ -216,6 +216,54 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         latent_vf_root = self.mlp_extractor.value_net(shared_features)
         value_root = self.value_net(latent_vf_root)
         return latent_pi, value_root
+    
+    def predict_values(self, obs: th.Tensor) -> th.Tensor: 
+        """
+        Forward pass in critic only
+
+        :param obs: Observation
+        :return: value
+        """
+        batch_size = obs.shape[0]
+        ret_values = th.zeros((batch_size, 1), device=obs.device)
+        hash_obses = self.hash_obs(obs)
+        all_leaves_obs = [] if self.use_leaves_v else [obs]
+        all_rewards = []
+        all_first_actions = []
+        for i in range(batch_size):
+            hash_obs = hash_obses[i].item()
+            if hash_obs in self.obs2leaves_dict:
+                leaves_observations, rewards, first_action = self.obs2leaves_dict.get(hash_obs)
+            else:
+                print("This should not happen! observation not in our dictionary")
+                leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs, self.cule_bfs.max_depth)
+                self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
+            all_leaves_obs.append(leaves_observations)
+            all_rewards.append(rewards)
+            all_first_actions.append(first_action)
+        all_rewards_th = th.cat(all_rewards).reshape([-1, 1])
+        val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
+        cat_features = self.extract_features(th.cat(all_leaves_obs))
+        shared_features = self.mlp_extractor.shared_net(cat_features)
+        if self.use_leaves_v:
+            latent_vf_root = self.mlp_extractor.value_net(shared_features)
+        else:
+            latent_vf_root = self.mlp_extractor.value_net(shared_features[:batch_size])
+        values = self.value_net(latent_vf_root)
+        if self.use_leaves_v:
+            values_subtrees = val_coef * values + all_rewards_th
+        else:
+            return values 
+        subtree_width = self.action_space.n ** self.cule_bfs.max_depth
+        if self.cule_bfs.max_width != -1:
+            subtree_width = min(subtree_width, self.cule_bfs.max_width*self.action_space.n)
+        for i in range(batch_size):
+            if self.use_leaves_v:
+                ret_values[i, 0] = values_subtrees[subtree_width * i:subtree_width * (i + 1)].max()
+            return ret_values
+
+
+
 
     def save(self, path: str) -> None:
         """

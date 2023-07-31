@@ -50,7 +50,7 @@ def main():
 
     # Setting PPO parameters to the original paper defaults
     awr_def_lr = get_linear_fn(config.learning_rate, 0, 1)
-    AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": 2048, "batch_size": 32, "normalize_advantages": True,
+    AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": 2048, "batch_size": 32, "normalize_advantage": True,
                   "ent_coef": 0.01, "gae_lambda": 0.95, "policy_gradient_steps": 1000, "value_gradient_steps": 200}
 
     # Setting PPO models
