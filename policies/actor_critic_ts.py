@@ -245,6 +245,9 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
                 # print("This should not happen! observation not in our dictionary")
                 leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs[i], self.cule_bfs.max_depth)
                 self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
+                self.obs2timestep_dict[hash_obs] = self.time_step
+                self.timestep2obs_dict[self.time_step] = hash_obs
+                self.time_step += 1
             all_leaves_obs.append(leaves_observations)
             all_rewards.append(rewards)
             all_first_actions.append(first_action)
