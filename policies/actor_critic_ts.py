@@ -55,7 +55,8 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
                 del self.timestep2obs_dict[self.obs2timestep_dict[hash_obs]]
         else:
             leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs, self.cule_bfs.max_depth)
-            self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
+            self.obs2leaves_dict[hash_obs] = leaves_observations.cpu(), rewards.cpu(), first_action if first_action is None else first_action.cpu()
+            # self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
         self.obs2timestep_dict[hash_obs] = self.time_step
         self.timestep2obs_dict[self.time_step] = hash_obs
         # Preprocess the observation if needed
@@ -133,14 +134,15 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             else:
                 print("This should not happen! observation not in our dictionary")
                 leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs[i], self.cule_bfs.max_depth)
-                self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
+                # self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
+                self.obs2leaves_dict[hash_obs] = leaves_observations.cpu(), rewards.cpu(), first_action if first_action is None else first_action.cpu()
             all_leaves_obs.append(leaves_observations)
             all_rewards.append(rewards)
             all_first_actions.append(first_action)
             # Preprocess the observation if needed
-        all_rewards_th = th.cat(all_rewards).reshape([-1, 1])
+        all_rewards_th = th.cat(all_rewards).reshape([-1, 1]).to(obs.device)
         val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
-        cat_features = self.extract_features(th.cat(all_leaves_obs))
+        cat_features = self.extract_features(th.cat(all_leaves_obs.to(obs.device)))
         shared_features = self.mlp_extractor.shared_net(cat_features)
         if self.use_leaves_v:
             latent_pi = self.mlp_extractor.policy_net(shared_features)
@@ -169,9 +171,9 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
                                                     device=mean_actions_batch.device) # - 1e6
                 idxes = th.arange(mean_actions_batch.shape[0])
                 counts = th.zeros(self.action_space.n)
-                v, c = th.unique(all_first_actions[i], return_counts=True)
+                v, c = th.unique(all_first_actions[i].to(obs.device), return_counts=True)
                 counts[v] = c.type(th.float32) * self.action_space.n
-                mean_actions_per_subtree[all_first_actions[i].flatten(), idxes, :] = mean_actions_batch
+                mean_actions_per_subtree[all_first_actions[i].flatten().to(obs.device), idxes, :] = mean_actions_batch
                 mean_actions_per_subtree = self.beta * mean_actions_per_subtree.reshape([self.action_space.n, -1])
             counts = counts.to(mean_actions.device).reshape([1, -1])
             if self.is_cumulative_mode:
@@ -235,27 +237,22 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         hash_obses = self.hash_obs(obs)
         all_leaves_obs = [] if self.use_leaves_v else [obs]
         all_rewards = []
-        all_first_actions = []
         for i in range(batch_size):
             hash_obs = hash_obses[i].item()
             if hash_obs in self.obs2leaves_dict:
                 leaves_observations, rewards, first_action = self.obs2leaves_dict.get(hash_obs)
             else:
-                # print(f"currently have {len(self.obs2leaves_dict)} obs in leaves")
-                # print(f"hash_obs: {hash_obs}, keys: {self.obs2leaves_dict.keys()}")
-                # print("This should not happen! observation not in our dictionary")
                 leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs[i], self.cule_bfs.max_depth)
-                print(leaves_observations.device, rewards.device, first_action.device)
-                self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
+                first_action = first_action if first_action is None else first_action.cpu()
+                self.obs2leaves_dict[hash_obs] = leaves_observations.cpu(), rewards.cpu(), first_action if first_action is None else first_action.cpu()
                 self.obs2timestep_dict[hash_obs] = self.time_step
                 self.timestep2obs_dict[self.time_step] = hash_obs
                 self.time_step += 1
             all_leaves_obs.append(leaves_observations)
             all_rewards.append(rewards)
-            all_first_actions.append(first_action)
-        all_rewards_th = th.cat(all_rewards).reshape([-1, 1])
+        all_rewards_th = th.cat(all_rewards).reshape([-1, 1]).to(obs.device)
         val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
-        cat_features = self.extract_features(th.cat(all_leaves_obs, dim=0))
+        cat_features = self.extract_features(th.cat(all_leaves_obs.to(obs.device), dim=0))
         shared_features = self.mlp_extractor.shared_net(cat_features)
         if self.use_leaves_v:
             latent_vf_root = self.mlp_extractor.value_net(shared_features)
