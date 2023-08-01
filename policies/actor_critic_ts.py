@@ -232,7 +232,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         :param obs: Observation
         :return: value
         """
-        print(f" buffer size: {self.buffer_size} len(self.obs2leaves_dict): {len(self.obs2leaves_dict)} len(self.obs2timestep_dict): {len(self.obs2timestep_dict)} len(self.timestep2obs_dict): {len(self.timestep2obs_dict)}")
+        # print(f" buffer size: {self.buffer_size} len(self.obs2leaves_dict): {len(self.obs2leaves_dict)} len(self.obs2timestep_dict): {len(self.obs2timestep_dict)} len(self.timestep2obs_dict): {len(self.timestep2obs_dict)}")
         # print(f"predict_values: obs.shape: {obs.shape}")
         batch_size = obs.shape[0]
         ret_values = th.zeros((batch_size, 1), device=obs.device)
