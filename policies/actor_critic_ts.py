@@ -51,6 +51,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         hash_obs = self.hash_obs(obs)[0].item()
         if hash_obs in self.obs2leaves_dict:
             leaves_observations, rewards, first_action = self.obs2leaves_dict.get(hash_obs)
+            leaves_observations, rewards, first_action = leaves_observations.to(obs.device), rewards.to(obs.device), first_action.to(obs.device)
             if hash_obs in self.timestep2obs_dict:
                 del self.timestep2obs_dict[self.obs2timestep_dict[hash_obs]]
         else:
