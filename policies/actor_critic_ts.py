@@ -143,7 +143,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             # Preprocess the observation if needed
         all_rewards_th = th.cat(all_rewards).reshape([-1, 1]).to(obs.device)
         val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
-        cat_features = self.extract_features(th.cat(all_leaves_obs.to(obs.device)))
+        cat_features = self.extract_features(th.cat(all_leaves_obs).to(obs.device))
         shared_features = self.mlp_extractor.shared_net(cat_features)
         if self.use_leaves_v:
             latent_pi = self.mlp_extractor.policy_net(shared_features)
@@ -253,7 +253,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             all_rewards.append(rewards)
         all_rewards_th = th.cat(all_rewards).reshape([-1, 1]).to(obs.device)
         val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
-        cat_features = self.extract_features(th.cat(all_leaves_obs.to(obs.device), dim=0))
+        cat_features = self.extract_features(th.cat(all_leaves_obs, dim=0).to(obs.device))
         shared_features = self.mlp_extractor.shared_net(cat_features)
         if self.use_leaves_v:
             latent_vf_root = self.mlp_extractor.value_net(shared_features)
