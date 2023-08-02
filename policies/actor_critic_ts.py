@@ -101,9 +101,9 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         actions = distribution.get_actions(deterministic=deterministic)
         log_prob = distribution.log_prob(actions)
         if self.time_step - self.buffer_size in self.timestep2obs_dict:
-            if self.time_step - self.buffer_size in self.obs2leaves_dict: 
+            if self.timestep2obs_dict[self.time_step - self.buffer_size] in self.obs2leaves_dict: 
                 del self.obs2leaves_dict[self.timestep2obs_dict[self.time_step - self.buffer_size]]
-            if self.time_step - self.buffer_size in self.obs2timestep_dict: 
+            if self.timestep2obs_dict[self.time_step - self.buffer_size] in self.obs2timestep_dict: 
                 del self.obs2timestep_dict[self.timestep2obs_dict[self.time_step - self.buffer_size]]
             del self.timestep2obs_dict[self.time_step - self.buffer_size]
         self.time_step += 1
