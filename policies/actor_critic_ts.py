@@ -255,8 +255,10 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             all_rewards.append(rewards)
         all_rewards_th = th.cat(all_rewards).reshape([-1, 1])
         val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
-        # cat_features = self.extract_features(th.cat(all_leaves_obs, dim=0))
-        cat_features = self.extract_features(th.cat(all_leaves_obs))
+        
+        cat_features = self.extract_features(th.cat(all_leaves_obs, dim=0))
+        print(f"obs shape: {obs.shape} cat_features shape: {cat_features.shape}")
+        # cat_features = self.extract_features(th.cat(all_leaves_obs))
         shared_features = self.mlp_extractor.shared_net(cat_features)
         if self.use_leaves_v:
             latent_vf_root = self.mlp_extractor.value_net(shared_features)
