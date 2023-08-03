@@ -20,18 +20,18 @@ These instructions will get you a copy of the project up and running on your loc
 
 1. Clone the project:
    ```
-   git clone https://github.com/NVlabs/SoftTreeMax.git
+   git clone https://github.com/benja263/awr_planning.git
    ```
 2. Build the docker image: 
     ```
-    cd SoftTreeMax && docker build -t stm .
+    cd SoftTreeMax && docker build -t awr_stm .
     ```
 
 ### Usage
 
 1. Start the docker image: 
    ```
-   docker run --runtime=nvidia -it stm /bin/bash
+   docker run --runtime=nvidia -it awr_stm /bin/bash
    ```
 2. CD to project directory:
     ```
