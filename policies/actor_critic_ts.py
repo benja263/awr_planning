@@ -77,8 +77,8 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             idxes = th.arange(mean_actions.shape[0])
             counts = th.zeros(self.action_space.n)
             v, c = th.unique(first_action, return_counts=True)
-            print(counts.device, c.device)
-            counts[v] = c.type(th.float32) * self.action_space.n
+            # print(counts.device, c.device)
+            counts[v] = (c.type(th.float32) * self.action_space.n).cpu()
             mean_actions_per_subtree[first_action.flatten(), idxes, :] = mean_actions
             mean_actions_per_subtree = self.beta * mean_actions_per_subtree.reshape([self.action_space.n, -1])
         counts = counts.to(mean_actions.device).reshape([1, -1])
@@ -175,7 +175,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
                 idxes = th.arange(mean_actions_batch.shape[0])
                 counts = th.zeros(self.action_space.n)
                 v, c = th.unique(all_first_actions[i], return_counts=True)
-                counts[v] = c.type(th.float32) * self.action_space.n
+                counts[v] = (c.type(th.float32) * self.action_space.n).cpu()
                 mean_actions_per_subtree[all_first_actions[i].flatten(), idxes, :] = mean_actions_batch
                 mean_actions_per_subtree = self.beta * mean_actions_per_subtree.reshape([self.action_space.n, -1])
             counts = counts.to(mean_actions.device).reshape([1, -1])
