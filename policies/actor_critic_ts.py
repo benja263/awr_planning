@@ -77,7 +77,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             idxes = th.arange(mean_actions.shape[0], device=obs.device)
             counts = th.zeros(self.action_space.n, device=obs.device)
             v, c = th.unique(first_action, return_counts=True)
-            print(counts.device, c.device, self.action_space.n.device)
+            print(counts.device, c.device)
             counts[v] = c.type(th.float32) * self.action_space.n
             mean_actions_per_subtree[first_action.flatten(), idxes, :] = mean_actions
             mean_actions_per_subtree = self.beta * mean_actions_per_subtree.reshape([self.action_space.n, -1])
