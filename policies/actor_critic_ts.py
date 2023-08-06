@@ -77,6 +77,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             idxes = th.arange(mean_actions.shape[0], device=obs.device)
             counts = th.zeros(self.action_space.n, device=obs.device)
             v, c = th.unique(first_action, return_counts=True)
+            print(counts.device, c.device, self.action_space.n.device)
             counts[v] = c.type(th.float32) * self.action_space.n
             mean_actions_per_subtree[first_action.flatten(), idxes, :] = mean_actions
             mean_actions_per_subtree = self.beta * mean_actions_per_subtree.reshape([self.action_space.n, -1])
@@ -257,8 +258,6 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
         # print(f"obs shape: {obs.shape} th.cat(all_leaves_obs, dim=0).shape: {th.cat(all_leaves_obs, dim=0).shape}")
         cat_features = self.extract_features(th.cat(all_leaves_obs, dim=0))
-        
-        # cat_features = self.extract_features(th.cat(all_leaves_obs))
         shared_features = self.mlp_extractor.shared_net(cat_features)
         if self.use_leaves_v:
             latent_vf_root = self.mlp_extractor.value_net(shared_features)
