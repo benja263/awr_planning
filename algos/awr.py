@@ -211,8 +211,6 @@ class AWR(OffPolicyAlgorithm):
         self._n_updates += self.policy_gradient_steps
         self.epochs += 1
 
-        print(np.mean(value_losses), np.mean(policy_losses))
-
         self.logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
         self.logger.record("train/value_loss", np.mean(value_losses))
         self.logger.record("train/replay_buffer_pos", self.replay_buffer.pos)

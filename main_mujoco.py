@@ -40,7 +40,8 @@ def main():
     awr_def_lr = get_linear_fn(config.learning_rate, 0, 1)
     AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": 2048, "batch_size": 32, "normalize_advantage": True,
                   "ent_coef": 0.01, "gae_lambda": 0.95, "policy_gradient_steps": 1000, "value_gradient_steps": 200, 
-                  "learning_starts": 10000, "value_batch_size": config.value_batch_size, "beta": config.beta}
+                  "learning_starts": 10000, "value_batch_size": config.value_batch_size, "beta": config.beta,
+                  "tensorboard_log": f"runs/awr"}
 
     # Setting PPO models
     model = AWR(policy=ActorCriticPolicy, env=env, verbose=2, **AWR_params)
@@ -53,7 +54,7 @@ def main():
             os.makedirs(saved_agents_dir)
         # save agent
         model_filename = "{}/{}".format(saved_agents_dir, wandb.run.id)
-        callbacks = [WandbCallback()]
+        callbacks = [WandbCallback(verbose=2)]
         model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=callbacks)
         print("Saving model in " + model_filename)
         model.policy.save(model_filename)
