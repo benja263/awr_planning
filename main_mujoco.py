@@ -44,7 +44,7 @@ def main():
                   "tensorboard_log": f"runs/"}
 
     # Setting PPO models
-    model = AWR(policy=ActorCriticPolicy, env=env, verbose=2, **AWR_params)
+    model = AWR(policy=ActorCriticPolicy, env=env, verbose=1, **AWR_params)
 
 
     # save agent folder and name
@@ -54,7 +54,7 @@ def main():
             os.makedirs(saved_agents_dir)
         # save agent
         model_filename = "{}/{}".format(saved_agents_dir, wandb.run.id)
-        callbacks = [WandbCallback(verbose=2)]
+        callbacks = [WandbCallback(verbose=1)]
         model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=callbacks, tb_log_name=f"runs/")
         print("Saving model in " + model_filename)
         model.policy.save(model_filename)
