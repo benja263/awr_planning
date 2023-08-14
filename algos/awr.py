@@ -134,7 +134,6 @@ class AWR(OffPolicyAlgorithm):
         Sample the replay buffer and do the updates
         (gradient descent and update target networks)
         """
-        print("device: ", self.device)
          # Switch to train mode (this affects batch norm / dropout)
         self.policy.set_training_mode(True)
         # print('training')
@@ -211,6 +210,8 @@ class AWR(OffPolicyAlgorithm):
 
         self._n_updates += self.policy_gradient_steps
         self.epochs += 1
+
+        print(np.mean(value_losses), np.mean(policy_losses))
 
         self.logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
         self.logger.record("train/value_loss", np.mean(value_losses))
