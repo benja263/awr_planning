@@ -49,12 +49,12 @@ class AWR(OffPolicyAlgorithm):
             seed: Optional[int] = None,
             device: Union[th.device, str] = "auto",
     ):
-
-        policy_kwargs['activation_fn'] = 'relu' if policy_kwargs is None else ACTIVATION[policy_kwargs.get('activation_fn', 'relu')]
-        
-        optimizer_class = policy_kwargs.get('optimizer_class', None)
-        if optimizer_class is not None:
-            policy_kwargs['optimizer_class'] = OPTIMIZER[optimizer_class]
+        optimizer_class = None
+        if policy_kwargs is not None:
+            policy_kwargs['activation_fn'] = 'relu' if policy_kwargs is None else ACTIVATION[policy_kwargs.get('activation_fn', 'relu')]
+            optimizer_class = policy_kwargs.get('optimizer_class', None)
+            if optimizer_class is not None:
+                policy_kwargs['optimizer_class'] = OPTIMIZER[optimizer_class]
 
         self.beta = beta
         self.gae_lambda = gae_lambda
