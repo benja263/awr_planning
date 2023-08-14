@@ -41,7 +41,7 @@ def main():
     AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": 2048, "batch_size": 256, "normalize_advantage": True,
                   "ent_coef": 0.01, "gae_lambda": 0.95, "policy_gradient_steps": 1000, "value_gradient_steps": 200, 
                   "learning_starts": 10000, "value_batch_size": config.value_batch_size, "beta": config.beta, "learning_starts": 1000,
-                  "tensorboard_log": f"runs/"}
+                  "tensorboard_log": f"./runs/"}
 
     # Setting PPO models
     model = AWR(policy=ActorCriticPolicy, env=env, verbose=1, **AWR_params)
