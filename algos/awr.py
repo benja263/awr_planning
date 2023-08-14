@@ -43,7 +43,7 @@ class AWR(OffPolicyAlgorithm):
             policy_bound_loss_weight: float = 0,
             tensorboard_log: Optional[str] = None,
             policy_kwargs: Optional[Dict[str, Any]] = None,
-            verbose: int = 0,
+            verbose: int = 1,
             value_batch_size: int = 512,
             normalize_advantage: bool = False,
             seed: Optional[int] = None,
