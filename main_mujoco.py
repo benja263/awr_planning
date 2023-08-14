@@ -15,7 +15,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecNormalize
 
 from stable_baselines3.common.policies import ActorCriticPolicy
-from callbacks import WandbTrainingCallback
+from wandb.integration.sb3 import WandbCallback
 from utils import create_parser, set_seed
 
 # from wandb.integration.sb3 import WandbCallback
@@ -53,7 +53,7 @@ def main():
             os.makedirs(saved_agents_dir)
         # save agent
         model_filename = "{}/{}".format(saved_agents_dir, wandb.run.id)
-        callbacks = [WandbTrainingCallback()]
+        callbacks = [WandbCallback()]
         model.learn(total_timesteps=config.total_timesteps, log_interval=None, callback=callbacks)
         print("Saving model in " + model_filename)
         model.policy.save(model_filename)
