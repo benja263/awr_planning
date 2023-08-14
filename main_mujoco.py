@@ -17,6 +17,8 @@ from stable_baselines3.common.vec_env import VecNormalize
 from stable_baselines3.common.policies import ActorCriticPolicy
 from wandb.integration.sb3 import WandbCallback
 from utils import create_parser, set_seed
+from stable_baselines3.common.logger import configure
+configure("./runs/", ["stdout", "tensorboard"])
 
 # from wandb.integration.sb3 import WandbCallback
 if sys.gettrace() is not None:
