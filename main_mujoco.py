@@ -29,7 +29,7 @@ if sys.gettrace() is not None:
 def main():
     # Input arguments
     parser = create_parser()
-    wandb.init(config=parser.parse_args(), project="pg-tree",monitor_gym=True, sync_tensorboard=True)
+    run = wandb.init(config=parser.parse_args(), project="pg-tree",monitor_gym=True, sync_tensorboard=True)
     config = wandb.config
 
     set_seed(config.seed)
@@ -43,7 +43,7 @@ def main():
     AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": 2048, "batch_size": 256, "normalize_advantage": True,
                   "ent_coef": 0.01, "gae_lambda": 0.95, "policy_gradient_steps": 1000, "value_gradient_steps": 200, 
                   "learning_starts": 10000, "value_batch_size": config.value_batch_size, "beta": config.beta, "learning_starts": 1000,
-                  "tensorboard_log": f"./runs/"}
+                  "tensorboard_log": f"./runs/{run.id}"}
 
     # Setting PPO models
     model = AWR(policy=ActorCriticPolicy, env=env, verbose=1, **AWR_params)
@@ -56,8 +56,7 @@ def main():
             os.makedirs(saved_agents_dir)
         # save agent
         model_filename = "{}/{}".format(saved_agents_dir, wandb.run.id)
-        callbacks = [WandbCallback(verbose=1)]
-        model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=callbacks, tb_log_name=f"log")
+        model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=WandbCallback(verbose=2))
         print("Saving model in " + model_filename)
         model.policy.save(model_filename)
     elif config.run_type == "evaluate":
