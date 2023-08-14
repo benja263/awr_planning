@@ -134,6 +134,7 @@ class AWR(OffPolicyAlgorithm):
         Sample the replay buffer and do the updates
         (gradient descent and update target networks)
         """
+        print("device: ", self.device)
          # Switch to train mode (this affects batch norm / dropout)
         self.policy.set_training_mode(True)
         # print('training')
