@@ -27,7 +27,7 @@ if sys.gettrace() is not None:
 def main():
     # Input arguments
     parser = create_parser()
-    wandb.init(config=parser.parse_args(), project="pg-tree")
+    wandb.init(config=parser.parse_args(), project="pg-tree",monitor_gym=True, sync_tensorboard=True)
     config = wandb.config
 
     set_seed(config.seed)
@@ -55,7 +55,7 @@ def main():
         # save agent
         model_filename = "{}/{}".format(saved_agents_dir, wandb.run.id)
         callbacks = [WandbCallback(verbose=2)]
-        model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=callbacks)
+        model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=callbacks, tb_log_name=f"runs/awr")
         print("Saving model in " + model_filename)
         model.policy.save(model_filename)
     elif config.run_type == "evaluate":
