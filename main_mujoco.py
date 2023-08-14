@@ -32,7 +32,7 @@ def main():
 
     set_seed(config.seed)
     # Setting environment
-    env = make_vec_env(config.env_name, n_envs=config.n_envs, seed=config.seed, wrapper_class=VecNormalize,
+    env = make_vec_env(config.env_name, n_envs=config.n_envs, wrapper_class=VecNormalize,
                         wrapper_kwargs=dict(training=True, norm_obs=True, norm_reward=False))
     print("Environment:", config.env_name)
 
