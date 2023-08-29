@@ -70,7 +70,8 @@ class AWR(OffPolicyAlgorithm):
             n_envs = env.num_envs
         except AttributeError:
             n_envs = 1
-        tr_freq = TrainFreq(n_steps // n_envs, TrainFrequencyUnit.STEP)
+        # tr_freq = TrainFreq(n_steps // n_envs, TrainFrequencyUnit.STEP)
+        tr_freq = TrainFreq(n_steps, TrainFrequencyUnit.EPISODE)
         super().__init__(policy=policy,
         env=env,
         policy_base=None,
@@ -211,7 +212,6 @@ class AWR(OffPolicyAlgorithm):
 
         self._n_updates += self.policy_gradient_steps
         self.epochs += 1
-        self.logger.log("TEST LOG")
         self.logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
         self.logger.record("train/value_loss", np.mean(value_losses))
         self.logger.record("train/replay_buffer_pos", self.replay_buffer.pos)

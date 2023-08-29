@@ -15,3 +15,4 @@ RUN mkdir /workspace/ROM/
 RUN apt-get install unrar
 RUN unrar e -y /workspace/Roms.rar /workspace/ROM/
 RUN python -m atari_py.import_roms /workspace/ROM/
+RUN pip install mujoco-py
