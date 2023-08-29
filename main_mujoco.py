@@ -60,7 +60,8 @@ def main():
             os.makedirs(saved_agents_dir)
         # save agent
         model_filename = "{}/{}".format(saved_agents_dir, wandb.run.id)
-        model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=wandb_callback)
+        # model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=wandb_callback)
+        model.learn(total_timesteps=config.total_timesteps, log_interval=1)
         print("Saving model in " + model_filename)
         model.policy.save(model_filename)
     elif config.run_type == "evaluate":
