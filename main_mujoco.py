@@ -51,7 +51,7 @@ def main():
                   "tensorboard_log": tensorboard_log}
     # Setting PPO models
     model = AWR(policy=ActorCriticPolicy, env=env, verbose=2, **AWR_params)
-    configure(folder="./logs", format_strs=["stdout", "log", "csv", "tensorboard"])
+    configure(folder="./logs", format_strings=["stdout", "log", "csv", "tensorboard"])
     # save agent folder and name
     saved_agents_dir = "saved_agents"
     if config.run_type == "train":
