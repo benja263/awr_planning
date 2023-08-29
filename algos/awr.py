@@ -191,13 +191,13 @@ class AWR(OffPolicyAlgorithm):
 
             policy_loss = -(log_prob*weights).mean() - self.ent_coef*th.mean(entropy)
 
-            # if self.policy_bound_loss_weight > 0 and isinstance(self.action_space, spaces.Box):
-            #     distrib = self.policy.actor.get_distribution(replay_data.observations)
-            #     val = distrib.mode()
-            #     vio_min = th.clamp(val - self.bound_min, max=0)
-            #     vio_max = th.clamp(val - self.bound_max, min=0)
-            #     violation = vio_min.pow_(2).sum(axis=-1) + vio_max.pow_(2).sum(axis=-1)
-            #     policy_loss += 0.5 * th.mean(violation)
+            if self.policy_bound_loss_weight > 0 and isinstance(self.action_space, spaces.Box):
+                distrib = self.policy.actor.get_distribution(replay_data.observations)
+                val = distrib.mode()
+                vio_min = th.clamp(val - self.bound_min, max=0)
+                vio_max = th.clamp(val - self.bound_max, min=0)
+                violation = vio_min.pow_(2).sum(axis=-1) + vio_max.pow_(2).sum(axis=-1)
+                policy_loss += 0.5 * th.mean(violation)
 
             self.policy.optimizer.zero_grad()
             policy_loss.backward()
@@ -216,7 +216,7 @@ class AWR(OffPolicyAlgorithm):
         self.logger.record("train/replay_buffer_size", self.replay_buffer.buffer_size)
         self.logger.record("train/replay_buffer_full", self.replay_buffer.full)
         self.logger.record("train/policy_loss", np.mean(policy_losses))
-
+        print("finished log")
 
     def learn(
         self,
