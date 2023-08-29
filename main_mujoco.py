@@ -31,7 +31,7 @@ def main():
     parser = create_parser()
     wandb.init(config=parser.parse_args(), project="pg-tree", monitor_gym=True, sync_tensorboard=True)
     config = wandb.config
-
+    print(os.environ["WANDB_MODE"])
     set_seed(config.seed)
     # Setting environment
     env = make_vec_env(config.env_name, n_envs=config.n_envs, seed=config.seed)
