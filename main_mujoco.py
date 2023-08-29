@@ -38,18 +38,21 @@ def main():
     env = VecNormalize(env, training=True, norm_obs=True, norm_reward=False)
     print("Environment:", config.env_name)
 
+    wandb_callback = WandbCallback(
+        gradient_save_freq=0,
+        model_save_path=None,
+        verbose=1)
+    tb_log_name = f"./runs/{run.id}"
+
     # Setting PPO parameters to the original paper defaults
     awr_def_lr = get_linear_fn(config.learning_rate, 0, 1)
     AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": 2048, "batch_size": 256, "normalize_advantage": True,
                   "ent_coef": 0.01, "gae_lambda": 0.95, "policy_gradient_steps": 1000, "value_gradient_steps": 200, 
                   "learning_starts": 10000, "value_batch_size": config.value_batch_size, "beta": config.beta, "learning_starts": 1000,
-                  "tensorboard_log": f"./runs/{run.id}"}
+                  "tensorboard_log": tb_log_name}
     # Setting PPO models
     model = AWR(policy=ActorCriticPolicy, env=env, verbose=2, **AWR_params)
-    wandb_callback = WandbCallback(
-        gradient_save_freq=0,
-        model_save_path=None,
-        verbose=1)
+
     # save agent folder and name
     saved_agents_dir = "saved_agents"
     if config.run_type == "train":
@@ -57,7 +60,7 @@ def main():
             os.makedirs(saved_agents_dir)
         # save agent
         model_filename = "{}/{}".format(saved_agents_dir, wandb.run.id)
-        model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=wandb_callback)
+        model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=wandb_callback, tb_log_name=tb_log_name)
         print("Saving model in " + model_filename)
         model.policy.save(model_filename)
     elif config.run_type == "evaluate":
