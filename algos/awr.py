@@ -35,7 +35,7 @@ class AWR(OffPolicyAlgorithm):
             gae_lambda: float = 0.95,
             ent_coef: float = 0.0,
             weights_max: float = 20,
-            learning_starts: int = 100,
+            learning_starts: int = 10000,
             max_grad_norm: float = 0.0,
             buffer_size: int = 100000,
             policy_gradient_steps: int=1000,
