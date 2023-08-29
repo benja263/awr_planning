@@ -48,11 +48,10 @@ def main():
     AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": 2048, "batch_size": 256, "normalize_advantage": True,
                   "ent_coef": 0.01, "gae_lambda": 0.95, "policy_gradient_steps": 1000, "value_gradient_steps": 200, 
                   "learning_starts": 10000, "value_batch_size": config.value_batch_size, "beta": config.beta, "learning_starts": 1000,
-                #   "tensorboard_log": tensorboard_log}
-                  }
+                  "tensorboard_log": tensorboard_log}
     # Setting PPO models
     model = AWR(policy=ActorCriticPolicy, env=env, verbose=2, **AWR_params)
-    configure(folder="./logs", format_strings=["stdout", "log", "csv", "tensorboard"])
+
     # save agent folder and name
     saved_agents_dir = "saved_agents"
     if config.run_type == "train":
@@ -60,8 +59,8 @@ def main():
             os.makedirs(saved_agents_dir)
         # save agent
         model_filename = "{}/{}".format(saved_agents_dir, wandb.run.id)
-        # model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=wandb_callback)
-        model.learn(total_timesteps=config.total_timesteps, log_interval=1)
+        model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=wandb_callback)
+        # model.learn(total_timesteps=config.total_timesteps, log_interval=1)
         print("Saving model in " + model_filename)
         model.policy.save(model_filename)
     elif config.run_type == "evaluate":
