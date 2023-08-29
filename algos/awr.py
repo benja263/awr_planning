@@ -73,6 +73,7 @@ class AWR(OffPolicyAlgorithm):
         tr_freq = TrainFreq(n_steps // n_envs, TrainFrequencyUnit.STEP)
         super().__init__(policy=policy,
         env=env,
+        policy_base=None,
         replay_buffer_class=AWRReplayBuffer,
         support_multi_env=True if n_envs > 1 else False,
         tensorboard_log=tensorboard_log,
@@ -89,6 +90,8 @@ class AWR(OffPolicyAlgorithm):
         replay_buffer_kwargs={'gae_lambda': gae_lambda, 'gamma': gamma},
         )
         super()._setup_model()
+
+        self.logger.log("TEST LOG")
 
         self.bound_min = self.get_action_bound_min()
         self.bound_max = self.get_action_bound_max()
@@ -191,13 +194,13 @@ class AWR(OffPolicyAlgorithm):
 
             policy_loss = -(log_prob*weights).mean() - self.ent_coef*th.mean(entropy)
 
-            if self.policy_bound_loss_weight > 0 and isinstance(self.action_space, spaces.Box):
-                distrib = self.policy.actor.get_distribution(replay_data.observations)
-                val = distrib.mode()
-                vio_min = th.clamp(val - self.bound_min, max=0)
-                vio_max = th.clamp(val - self.bound_max, min=0)
-                violation = vio_min.pow_(2).sum(axis=-1) + vio_max.pow_(2).sum(axis=-1)
-                policy_loss += 0.5 * th.mean(violation)
+            # if self.policy_bound_loss_weight > 0 and isinstance(self.action_space, spaces.Box):
+            #     distrib = self.policy.actor.get_distribution(replay_data.observations)
+            #     val = distrib.mode()
+            #     vio_min = th.clamp(val - self.bound_min, max=0)
+            #     vio_max = th.clamp(val - self.bound_max, min=0)
+            #     violation = vio_min.pow_(2).sum(axis=-1) + vio_max.pow_(2).sum(axis=-1)
+            #     policy_loss += 0.5 * th.mean(violation)
 
             self.policy.optimizer.zero_grad()
             policy_loss.backward()
@@ -216,7 +219,7 @@ class AWR(OffPolicyAlgorithm):
         self.logger.record("train/replay_buffer_size", self.replay_buffer.buffer_size)
         self.logger.record("train/replay_buffer_full", self.replay_buffer.full)
         self.logger.record("train/policy_loss", np.mean(policy_losses))
-        print("finished log")
+
 
     def learn(
         self,
