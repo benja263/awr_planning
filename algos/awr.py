@@ -91,7 +91,6 @@ class AWR(OffPolicyAlgorithm):
         )
         super()._setup_model()
 
-        self.logger.log("TEST LOG")
 
         self.bound_min = self.get_action_bound_min()
         self.bound_max = self.get_action_bound_max()
@@ -212,7 +211,7 @@ class AWR(OffPolicyAlgorithm):
 
         self._n_updates += self.policy_gradient_steps
         self.epochs += 1
-
+        self.logger.log("TEST LOG")
         self.logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
         self.logger.record("train/value_loss", np.mean(value_losses))
         self.logger.record("train/replay_buffer_pos", self.replay_buffer.pos)
