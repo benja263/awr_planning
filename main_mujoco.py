@@ -42,7 +42,7 @@ def main():
         gradient_save_freq=0,
         model_save_path=None,
         verbose=1)
-    tensorboard_log = f"./runs/{run.id}"
+    tensorboard_log = f"./runs/{wandb.run.id}"
 
     # Setting PPO parameters to the original paper defaults
     awr_def_lr = get_linear_fn(config.learning_rate, 0, 1)
