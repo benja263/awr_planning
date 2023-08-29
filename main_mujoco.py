@@ -18,7 +18,7 @@ from stable_baselines3.common.policies import ActorCriticPolicy
 from wandb.integration.sb3 import WandbCallback
 from utils import create_parser, set_seed
 from stable_baselines3.common.logger import configure
-configure("./runs/", ["stdout", "tensorboard"])
+# 
 
 # from wandb.integration.sb3 import WandbCallback
 if sys.gettrace() is not None:
@@ -43,8 +43,9 @@ def main():
     AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": 2048, "batch_size": 256, "normalize_advantage": True,
                   "ent_coef": 0.01, "gae_lambda": 0.95, "policy_gradient_steps": 1000, "value_gradient_steps": 200, 
                   "learning_starts": 10000, "value_batch_size": config.value_batch_size, "beta": config.beta, "learning_starts": 1000,
-                  "tensorboard_log": f"./runs/{run.id}"}
-
+                #   "tensorboard_log": f"./runs/{run.id}"}
+                  "tensorboard_log": None}
+    configure("./runs/", ["stdout", "tensorboard"])
     # Setting PPO models
     model = AWR(policy=ActorCriticPolicy, env=env, verbose=1, **AWR_params)
 
