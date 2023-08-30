@@ -145,15 +145,13 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             # Preprocess the observation if needed
         all_rewards_th = th.cat(all_rewards).reshape([-1, 1])
         val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
-        cat_features = self.extract_features(th.cat(all_leaves_obs))
-        shared_features = self.mlp_extractor.shared_net(cat_features)
+        cat_features = th.cat(all_leaves_obs)
         if self.use_leaves_v:
-            latent_pi = self.mlp_extractor.policy_net(shared_features)
-            latent_vf_root = self.mlp_extractor.value_net(shared_features)
+            values = self.critic(cat_features)
+            latent_pi = self.actor.get_latent_pi(cat_features)
         else:
-            latent_pi = self.mlp_extractor.policy_net(shared_features[batch_size:])
-            latent_vf_root = self.mlp_extractor.value_net(shared_features[:batch_size])
-        values = self.value_net(latent_vf_root)
+            latent_pi = self.actor.get_latent_pi(cat_features[batch_size:])
+            values = self.critic(cat_features[:batch_size])
         # Assaf added
         mean_actions = val_coef * self.actor.action_net(latent_pi) + all_rewards_th
         if self.use_leaves_v:
