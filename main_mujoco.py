@@ -14,7 +14,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecNormalize
 
-from stable_baselines3.common.policies import ActorCriticPolicy
+from policies.awr_policy import AWRPolicy
 from wandb.integration.sb3 import WandbCallback
 from utils import create_parser, set_seed
 from stable_baselines3.common.logger import configure
@@ -50,7 +50,7 @@ def main():
                   "learning_starts": 10000, "value_batch_size": config.value_batch_size, "beta": config.beta, "learning_starts": 1000,
                   "tensorboard_log": tensorboard_log, 'episodic': config.episodic, "policy_kwargs": {'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr}} }
     # Setting PPO models
-    model = AWR(policy=ActorCriticPolicy, env=env, verbose=2, **AWR_params)
+    model = AWR(policy=AWRPolicy, env=env, verbose=2, **AWR_params)
 
     # save agent folder and name
     saved_agents_dir = "saved_agents"

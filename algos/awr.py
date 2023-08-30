@@ -25,7 +25,7 @@ class AWR(OffPolicyAlgorithm):
 
     policy: AWRPolicy
     def __init__(self, 
-            policy: Union[str, Type[ActorCriticPolicy]],
+            policy: Union[str, Type[AWRPolicy]],
             env: Union[GymEnv, str],
             learning_rate: Union[float, Schedule] = 3e-4,
             n_steps: int = 2048,
