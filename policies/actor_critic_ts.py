@@ -210,7 +210,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             return self.actor.get_mean_actions(leaves_obs), None
        
         cat_features = th.cat((root_obs, leaves_obs))
-        print(cat_features.shape,cat_features[:1].shape, cat_features[1:].shape )
+        # print(cat_features.shape,cat_features[:1].shape, cat_features[1:].shape )
         latent_pi = self.actor.get_latent_pi(cat_features[1:])
         value_root = self.predict_values(cat_features[:1])
         return latent_pi, value_root
@@ -253,7 +253,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         all_rewards_th = th.cat(all_rewards).reshape([-1, 1])
         val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
         # print(f"obs shape: {obs.shape} th.cat(all_leaves_obs, dim=0).shape: {th.cat(all_leaves_obs, dim=0).shape}")
-        cat_features = self.extract_features(th.cat(all_leaves_obs, dim=0))
+        cat_features = th.cat(all_leaves_obs, dim=0)
         if self.use_leaves_v:
             values = self.critic(cat_features)
         else:
