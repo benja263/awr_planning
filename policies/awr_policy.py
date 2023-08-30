@@ -349,6 +349,16 @@ class AWRPolicy(BasePolicy):
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
         share_features_extractor: bool = False,
     ):
+        
+        
+        self.actor_lr, self.critic_lr = None,  None
+        if 'critic_lr' in optimizer_kwargs.keys():
+            self.critic_lr = optimizer_kwargs['critic_lr']
+            del optimizer_kwargs['critic_lr']
+        if 'actor_lr' in optimizer_kwargs.keys():
+            self.actor_lr = optimizer_kwargs['actor_lr']
+            del optimizer_kwargs['actor_lr']
+            
         super().__init__(
             observation_space,
             action_space,
@@ -397,13 +407,6 @@ class AWRPolicy(BasePolicy):
             }
         )
 
-        self.actor_lr, self.critic_lr = None,  None
-        if 'critic_lr' in optimizer_kwargs.keys():
-            self.critic_lr = optimizer_kwargs['critic_lr']
-            del optimizer_kwargs['critic_lr']
-        if 'actor_lr' in optimizer_kwargs.keys():
-            self.actor_lr = optimizer_kwargs['actor_lr']
-            del optimizer_kwargs['actor_lr']
 
 
         self.share_features_extractor = share_features_extractor
