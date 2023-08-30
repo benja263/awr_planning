@@ -98,7 +98,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             depth0_logits[th.isnan(depth0_logits)] = 0
         mean_actions_logits = self.alpha * mean_actions_logits + (1 - self.alpha) * depth0_logits
         mean_actions_logits = add_regularization_logits(mean_actions_logits, self.regularization)
-        distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
+        distribution = self.actor.action_dist.proba_distribution(action_logits=mean_actions_logits)
         actions = distribution.get_actions(deterministic=deterministic)
         log_prob = distribution.log_prob(actions)
         if self.time_step - self.buffer_size in self.timestep2obs_dict:
@@ -195,7 +195,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             depth0_logits[th.isnan(depth0_logits)] = 0
         mean_actions_logits = self.alpha * mean_actions_logits + (1 - self.alpha) * depth0_logits
         mean_actions_logits = add_regularization_logits(mean_actions_logits, self.regularization)
-        distribution = self.action_dist.proba_distribution(action_logits=mean_actions_logits)
+        distribution = self.actor.action_dist.proba_distribution(action_logits=mean_actions_logits)
         log_prob = distribution.log_prob(actions)
         if self.use_leaves_v:
             return ret_values, log_prob, distribution.entropy()
