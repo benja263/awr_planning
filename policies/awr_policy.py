@@ -267,7 +267,7 @@ class Actor(BasePolicy):
         return log_prob
     
     def get_latent_pi(self, obs: th.Tensor) -> th.Tensor: 
-        print(obs.shape)
+        print("obs:", obs.shape)
         features = super().extract_features(obs)
         print("features", features.shape)
         return self.latent_pi(features)
