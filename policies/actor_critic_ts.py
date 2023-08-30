@@ -210,6 +210,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             return self.actor.get_mean_actions(leaves_obs), None
        
         cat_features = th.cat((root_obs, leaves_obs))
+        print(cat_features.shape,cat_features[:1].shape, cat_features[1:].shape )
         latent_pi = self.actor.get_latent_pi(cat_features[1:])
         value_root = self.predict_values(cat_features[:1])
         return latent_pi, value_root
