@@ -347,18 +347,16 @@ class AWRPolicy(BasePolicy):
         normalize_images: bool = True,
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
+        hack_optimizer_kwargs: Optional[Dict[str, Any]] = None,
         share_features_extractor: bool = False,
     ):
         
-        
         self.actor_lr, self.critic_lr = None,  None
-        if 'critic_lr' in optimizer_kwargs.keys():
-            self.critic_lr = optimizer_kwargs['critic_lr']
-            del optimizer_kwargs['critic_lr']
-        if 'actor_lr' in optimizer_kwargs.keys():
-            self.actor_lr = optimizer_kwargs['actor_lr']
-            del optimizer_kwargs['actor_lr']
-            
+        if 'critic_lr' in hack_optimizer_kwargs.keys():
+            self.critic_lr = hack_optimizer_kwargs['critic_lr']
+        if 'actor_lr' in hack_optimizer_kwargs.keys():
+            self.actor_lr = hack_optimizer_kwargs['actor_lr']
+
         super().__init__(
             observation_space,
             action_space,
