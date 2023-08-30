@@ -208,6 +208,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
     def compute_value_with_root(self, leaves_obs, root_obs=None):
         if root_obs is None:
             return self.actor.get_mean_actions(leaves_obs), None
+        print("compue values: ", root_obs.shape, leaves_obs.shape)
         cat_features = self.extract_features(th.cat((root_obs, leaves_obs)))
         latent_pi = self.actor.get_latent_pi(cat_features[1:])
         value_root = self.predict_values(cat_features[:1])
