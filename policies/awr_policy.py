@@ -566,6 +566,7 @@ class CnnPolicy(AWRPolicy):
         normalize_images: bool = True,
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
+        hack_optimizer_kwargs: Optional[Dict[str, Any]] = None,
         share_features_extractor: bool = False,
     ):
         super().__init__(
@@ -583,5 +584,6 @@ class CnnPolicy(AWRPolicy):
             normalize_images,
             optimizer_class,
             optimizer_kwargs,
+            hack_optimizer_kwargs,
             share_features_extractor,
         )
