@@ -53,7 +53,7 @@ def main():
     awr_def_lr = get_linear_fn(config.actor_lr, 0, 1)
     AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": config.n_steps, "batch_size": 256, "normalize_advantage": True,
                   "ent_coef": config.ent_coef, "gae_lambda": 0.95, "policy_gradient_steps": config.policy_gradient_steps, "value_gradient_steps": config.value_gradient_steps, 
-                  "learning_starts": 10000, "value_batch_size": config.value_batch_size, "beta": config.beta, "learning_starts": 1000,
+                  "learning_starts": config.learning_starts, "value_batch_size": config.value_batch_size, "beta": config.beta,
                   "tensorboard_log": tensorboard_log, 'episodic': config.episodic}
 
     # Setting AWR models
