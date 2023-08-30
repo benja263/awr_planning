@@ -63,7 +63,8 @@ def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--total_timesteps", type=int, default=200000000,
                         help="Number of environment steps for training")
-    parser.add_argument("--learning_rate", type=float, default=2.5e-04, help="Optimizer learning rate")
+    parser.add_argument("--actor_lr", type=float, default=5.0e-5, help="Optimizer learning rate")
+    parser.add_argument("--critic_lr", type=float, default=1.0e-2, help="Optimizer learning rate")
     parser.add_argument("--seed", type=int, default=4, help="Seed for all pseudo-random generators")
     parser.add_argument("--env_name", type=str, default="AlienNoFrameskip-v4", help="Environment name")
     parser.add_argument("--gamma", type=float, default=0.99, help="Discount factor")

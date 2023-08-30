@@ -76,7 +76,7 @@ class AWR(OffPolicyAlgorithm):
                 tr_freq = TrainFreq(n_steps, TrainFrequencyUnit.EPISODE)
             else:
                 tr_freq = TrainFreq(n_steps // n_envs, TrainFrequencyUnit.STEP)
-                
+
         super().__init__(policy=policy,
         env=env,
         policy_base=None,
@@ -164,12 +164,12 @@ class AWR(OffPolicyAlgorithm):
             pred_values = self.policy.predict_values(replay_data.observations)
 
             value_loss = 0.5*F.mse_loss(pred_values.squeeze(), replay_data.returns.squeeze())
-            self.policy.optimizer.zero_grad()
+            self.policy.critic.optimizer.zero_grad()
             value_loss.backward()
             if self.max_grad_norm > 0.0:
                 nn.utils.clip_grad_norm_(self.policy.parameters(), self.max_grad_norm)
 
-            self.policy.optimizer.step()
+            self.policy.critic.optimizer.step()
             value_losses.append(value_loss.item())
 
 
@@ -207,11 +207,11 @@ class AWR(OffPolicyAlgorithm):
             #     violation = vio_min.pow_(2).sum(axis=-1) + vio_max.pow_(2).sum(axis=-1)
             #     policy_loss += 0.5 * th.mean(violation)
 
-            self.policy.optimizer.zero_grad()
+            self.policy.actor.optimizer.zero_grad()
             policy_loss.backward()
             if self.max_grad_norm > 0.0:
                 nn.utils.clip_grad_norm_(self.policy.parameters(), self.max_grad_norm)
-            self.policy.optimizer.step()
+            self.policy.actor.optimizer.step()
 
             policy_losses.append(policy_loss.item())
 
