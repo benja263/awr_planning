@@ -98,6 +98,6 @@ def create_parser():
     parser.add_argument("--run_type", type=str, default="train", help="Train or evaluate")  # train or evaluate
     parser.add_argument("--model_filename", type=str, default=None, help="Filename to store or load model")
     parser.add_argument("--n_eval_episodes", type=int, default=200, help="Number of evaluation episodes")
-    parser.add_argument("--value_gradient_steps", type=int, default=1000, help="Number of gradeient steps for value function")
+    parser.add_argument("--value_gradient_steps", type=int, default=200, help="Number of gradeient steps for value function")
     parser.add_argument("--policy_gradient_steps", type=int, default=1000, help="Number of gradeient steps for policy")
     return parser

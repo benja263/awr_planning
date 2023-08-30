@@ -74,7 +74,7 @@ class ContinuousCritic(BaseModel):
         # when the features_extractor is shared with the actor
         # print('feature_shape ', obs.shape)
         with th.set_grad_enabled(not self.share_features_extractor):
-            features = self.extract_features(obs, self.features_extractor)
+            features = self.extract_features(obs)
         return self.v_net(features).squeeze()
 
 
@@ -216,7 +216,7 @@ class Actor(BasePolicy):
         :param obs:
         :return: the action distribution.
         """
-        features = super().extract_features(obs, self.features_extractor)
+        features = super().extract_features(obs)
         latent_pi = self.latent_pi(features)
         return self._get_action_dist_from_latent(latent_pi)
 
