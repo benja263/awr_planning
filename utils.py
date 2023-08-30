@@ -74,6 +74,8 @@ def create_parser():
                         help="Whether to treat alpha (weight of root value) as a learnable parameter or constant")
     parser.add_argument("--learn_beta", type=str2bool, nargs="?", const=True, default=True,
                         help="Whether to treat beta (temperature parameter) as a learnable parameter or constant")
+    parser.add_argument("--episodic", type=str2bool, nargs="?", const=True, default=False,
+                        help="Whether to treat beta (temperature parameter) as a learnable parameter or constant")
     parser.add_argument("--max_width", type=int, default=-1,
                         help="Maximal SoftTreeMax width, beyond which the tree will be truncated. "
                              "Use -1 to not limit width.")
@@ -87,7 +89,8 @@ def create_parser():
     parser.add_argument("--is_cumulative_mode", type=str2bool, nargs="?", const=True, default=False,
                         help="True for Cumulative SoftTreeMax. False for Exponentiated SoftTreeMax")
     parser.add_argument("--regularization", type=float, default=0.001, help="Minimal probability for all actions")
-    parser.add_argument("--n_envs", type=int, default=256, help="Number of parallel AWR environments on GPU")
+    parser.add_argument("--n_envs", type=int, default=4, help="Number of parallel AWR environments on GPU")
+    parser.add_argument("--n_steps", type=int, default=2056, help="Number of steps in the environment per rollout")
     parser.add_argument("--value_batch_size", type=int, default=64, help="Batch size used to calculate values")
     parser.add_argument("--beta", type=float, default=1, help="AWR beta parameter")
     # Evaluation fields

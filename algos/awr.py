@@ -38,6 +38,7 @@ class AWR(OffPolicyAlgorithm):
             learning_starts: int = 10000,
             max_grad_norm: float = 0.0,
             buffer_size: int = 100000,
+            episodic: bool = False,
             policy_gradient_steps: int=1000,
             value_gradient_steps: int=250,
             policy_bound_loss_weight: float = 0,
@@ -71,7 +72,11 @@ class AWR(OffPolicyAlgorithm):
             tr_freq = TrainFreq(n_steps // n_envs, TrainFrequencyUnit.STEP)
         except AttributeError:
             n_envs = 1
-            tr_freq = TrainFreq(n_steps, TrainFrequencyUnit.EPISODE)
+            if episodic:
+                tr_freq = TrainFreq(n_steps, TrainFrequencyUnit.EPISODE)
+            else:
+                tr_freq = TrainFreq(n_steps // n_envs, TrainFrequencyUnit.STEP)
+                
         super().__init__(policy=policy,
         env=env,
         policy_base=None,
