@@ -68,13 +68,14 @@ class ContinuousCritic(BaseModel):
         self.share_features_extractor = share_features_extractor
         v_net = create_mlp(features_dim, 1, net_arch, activation_fn)
         self.v_net = nn.Sequential(*v_net)
+        self.features_extractor = features_extractor
 
     def forward(self, obs: th.Tensor) -> Tuple[th.Tensor, ...]:
         # Learn the features extractor using the policy loss only
         # when the features_extractor is shared with the actor
         # print('feature_shape ', obs.shape)
         with th.set_grad_enabled(not self.share_features_extractor):
-            features = self.extract_features(obs)
+            features = self.extract_features(obs, self.features_extractor)
         return self.v_net(features).squeeze()
 
 
@@ -129,6 +130,7 @@ class Actor(BasePolicy):
         )
 
         # Save arguments to re-create object at loading
+        self.features_extractor = features_extractor
         self.use_sde = use_sde
         self.sde_features_extractor = None
         self.net_arch = net_arch
@@ -217,7 +219,7 @@ class Actor(BasePolicy):
         :param obs:
         :return: the action distribution.
         """
-        features = super().extract_features(obs)
+        features = super().extract_features(obs, self.features_extractor)
         latent_pi = self.latent_pi(features)
         return self._get_action_dist_from_latent(latent_pi)
 
@@ -265,7 +267,7 @@ class Actor(BasePolicy):
         return log_prob
     
     def get_latent_pi(self, obs: th.Tensor) -> th.Tensor: 
-        features = super().extract_features(obs)
+        features = super().extract_features(obs, self.features_extractor)
         return self.latent_pi(features)
     
     def get_mean_actions(self, obs: th.Tensor) -> th.Tensor: 
@@ -416,6 +418,7 @@ class AWRPolicy(BasePolicy):
 
 
         self.share_features_extractor = share_features_extractor
+        self.features_extractor = self.make_features_extractor()
 
         self._build(lr_schedule)
 
