@@ -26,9 +26,8 @@ class ActorCriticCnnPolicyDepth0(CnnPolicy):
         return super(ActorCriticCnnPolicyDepth0, self).evaluate_actions(obs, actions)
 
     def add_gradients_history(self):
-        print(list(self.named_parameters()))
         policy_params = {param_name: param for param_name, param in self.named_parameters() if
-                         param_name.startswith("action_net")}
+                         param_name.startswith("actor.action_net")}
         for param_name in policy_params:
             if policy_params[param_name].grad is None:
                 break

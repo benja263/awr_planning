@@ -79,7 +79,7 @@ def main():
         # save agent
         model_filename = "{}/{}".format(saved_agents_dir, wandb.run.id)
         callbacks = [WandbTrainingCallback()]
-        model.learn(total_timesteps=config.total_timesteps, log_interval=None, callback=callbacks)
+        model.learn(total_timesteps=config.total_timesteps, log_interval=10, callback=callbacks)
         print("Saving model in " + model_filename)
         model.policy.save(model_filename)
     elif config.run_type == "evaluate":

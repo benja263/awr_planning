@@ -196,9 +196,9 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         distribution = self.actor.action_dist.proba_distribution(action_logits=mean_actions_logits)
         log_prob = distribution.log_prob(actions)
         if self.use_leaves_v:
-            return ret_values, log_prob, distribution.entropy()
+            return log_prob, distribution.entropy()
         else:
-            return values, log_prob, distribution.entropy()
+            return log_prob, distribution.entropy()
 
     def hash_obs(self, obs):
         return (obs[:, -2:, :, :].int()).view(obs.shape[0], -1).sum(dim=1)
