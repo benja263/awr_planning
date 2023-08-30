@@ -471,7 +471,6 @@ class AWRPolicy(BasePolicy):
         critic_kwargs = self._update_features_extractor(self.critic_kwargs, features_extractor)
         return ContinuousCritic(**critic_kwargs).to(self.device)
     
-    
     def predict_values(self, obs: th.Tensor) -> th.Tensor:
         """
         Get the estimated values according to the current policy given the observations.
@@ -480,6 +479,21 @@ class AWRPolicy(BasePolicy):
         :return: the estimated values.
         """
         return self.critic(obs)
+    
+    def evaluate_actions(self, obs: th.Tensor, actions: th.Tensor) -> Tuple[th.Tensor, th.Tensor, Optional[th.Tensor]]:
+        """
+        Evaluate actions according to the current policy,
+        given the observations.
+
+        :param obs: Observation
+        :param actions: Actions
+        :return: estimated value, log likelihood of taking those actions
+            and entropy of the action distribution.
+        """
+        distribution = self.actor.get_distribution(obs)
+        log_prob = distribution.log_prob(actions)
+        entropy = distribution.entropy()
+        return log_prob, entropy
 
     def forward(self, obs: th.Tensor, deterministic: bool = False) -> th.Tensor:
         return self._predict(obs, deterministic=deterministic)

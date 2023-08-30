@@ -195,7 +195,7 @@ class AWR(OffPolicyAlgorithm):
             weights = th.exp(advantages / self.beta)
             weights = th.clamp(weights, max=self.weights_max)
 
-            values, log_prob, entropy = self.policy.evaluate_actions(replay_data.observations, actions)
+            log_prob, entropy = self.policy.evaluate_actions(replay_data.observations, actions)
 
             policy_loss = -(log_prob*weights).mean() - self.ent_coef*th.mean(entropy)
 
