@@ -46,7 +46,7 @@ def main():
     # Setting PPO parameters to the original paper defaults
     awr_def_lr = get_linear_fn(config.learning_rate, 0, 1)
     AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": config.n_steps, "batch_size": 256, "normalize_advantage": True,
-                  "ent_coef": 0.01, "gae_lambda": 0.95, "policy_gradient_steps": 1000, "value_gradient_steps": 200, 
+                  "ent_coef": 0.01, "gae_lambda": 0.95, "policy_gradient_steps": config.policy_gradient_steps, "value_gradient_steps": config.value_gradient_steps, 
                   "learning_starts": 10000, "value_batch_size": config.value_batch_size, "beta": config.beta, "learning_starts": 1000,
                   "tensorboard_log": tensorboard_log, 'episodic': config.episodic}
     # Setting PPO models
