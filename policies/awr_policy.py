@@ -420,7 +420,7 @@ class AWRPolicy(BasePolicy):
         self._build(lr_schedule)
 
     def _build(self, lr_schedule: Schedule) -> None:
-        self.actor = self.make_actor()
+        self.actor = self.make_actor(self.features_extractor)
         self.actor.optimizer = self.optimizer_class(
             self.actor.parameters(),
             lr=self.actor_lr,  # type: ignore[call-arg]
@@ -428,7 +428,7 @@ class AWRPolicy(BasePolicy):
         )
 
         if self.share_features_extractor:
-            self.critic = self.make_critic(features_extractor=self.actor.features_extractor)
+            self.critic = self.make_critic(features_extractor=self.features_extractor)
             # Do not optimize the shared features extractor with the critic loss
             # otherwise, there are gradient computation issues
             critic_parameters = [param for name, param in self.critic.named_parameters() if "features_extractor" not in name]
