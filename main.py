@@ -54,7 +54,7 @@ def main():
     AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": config.n_steps, "batch_size": 256, "normalize_advantage": True,
                   "ent_coef": config.ent_coef, "gae_lambda": 0.95, "policy_gradient_steps": config.policy_gradient_steps, "value_gradient_steps": config.value_gradient_steps, 
                   "learning_starts": 10000, "value_batch_size": config.value_batch_size, "beta": config.beta, "learning_starts": 1000,
-                  "tensorboard_log": tensorboard_log, 'episodic': config.episodic, "policy_kwargs": {'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr}} }
+                  "tensorboard_log": tensorboard_log, 'episodic': config.episodic}
 
     # Setting PPO models
     if config.tree_depth == 0 and config.run_type == "train":
@@ -65,7 +65,8 @@ def main():
         max_width = int(config.max_width / env.action_space.n) if config.max_width != -1 else -1
         policy_kwargs = {"step_env": env, "gamma": config.gamma, "tree_depth": config.tree_depth,
                          "buffer_size": hash_buffer_size, "learn_alpha": config.learn_alpha,
-                         "learn_beta": config.learn_beta, "max_width": max_width, "use_leaves_v": config.use_leaves_v,
+                         "learn_beta": config.learn_beta, "max_width": max_width, "use_leaves_v": config.use_leaves_v, 
+                         'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr},
                          "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
         AWR_params['buffer_size'] = hash_buffer_size
         model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=1, policy_kwargs=policy_kwargs, **AWR_params)
