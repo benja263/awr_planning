@@ -67,7 +67,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             value_root = (val_coef * value_root + rewards.reshape([-1, 1])).max()
         else:
             latent_pi, value_root = self.compute_value_with_root(leaves_obs=leaves_observations, root_obs=obs)
-        mean_actions = val_coef * self.action_net(latent_pi) + rewards.reshape([-1, 1])
+        mean_actions = val_coef * self.actor.action_net(latent_pi) + rewards.reshape([-1, 1])
         if self.cule_bfs.max_width == -1:
             mean_actions_per_subtree = self.beta * mean_actions.reshape([self.action_space.n, -1])
             counts = th.ones([1, self.action_space.n]) * mean_actions_per_subtree.shape[1]
@@ -155,7 +155,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             latent_vf_root = self.mlp_extractor.value_net(shared_features[:batch_size])
         values = self.value_net(latent_vf_root)
         # Assaf added
-        mean_actions = val_coef * self.action_net(latent_pi) + all_rewards_th
+        mean_actions = val_coef * self.actor.action_net(latent_pi) + all_rewards_th
         if self.use_leaves_v:
             values_subtrees = val_coef * values + all_rewards_th
         subtree_width = self.action_space.n ** self.cule_bfs.max_depth
@@ -207,23 +207,17 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
 
     def compute_value_with_root(self, leaves_obs, root_obs=None):
         if root_obs is None:
-            shared_features = self.mlp_extractor.shared_net(self.extract_features(leaves_obs))
-            return self.action_net(self.mlp_extractor.policy_net(shared_features)), None
+            return self.actor.get_mean_actions(leaves_obs), None
         cat_features = self.extract_features(th.cat((root_obs, leaves_obs)))
-        shared_features = self.mlp_extractor.shared_net(cat_features)
-        latent_pi = self.mlp_extractor.policy_net(shared_features[1:])
-        latent_vf_root = self.mlp_extractor.value_net(shared_features[:1])
-        value_root = self.value_net(latent_vf_root)
+        latent_pi = self.actor.get_latent_pi(cat_features[1:])
+        value_root = self.predict_values(cat_features[:1])
         return latent_pi, value_root
 
     def compute_value(self, leaves_obs, root_obs=None):
         if root_obs is None:
-            shared_features = self.mlp_extractor.shared_net(self.extract_features(leaves_obs))
-            return self.action_net(self.mlp_extractor.policy_net(shared_features)), None
-        shared_features = self.mlp_extractor.shared_net(self.extract_features(leaves_obs))
-        latent_pi = self.mlp_extractor.policy_net(shared_features)
-        latent_vf_root = self.mlp_extractor.value_net(shared_features)
-        value_root = self.value_net(latent_vf_root)
+            return self.actor.get_mean_actions(leaves_obs), None
+        value_root = self.predict_values(leaves_obs)
+        latent_pi = self.actor.get_latent_pi(leaves_obs)
         return latent_pi, value_root
     
     def predict_values(self, obs: th.Tensor) -> th.Tensor: 
@@ -258,12 +252,10 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         val_coef = self.cule_bfs.gamma ** self.cule_bfs.max_depth
         # print(f"obs shape: {obs.shape} th.cat(all_leaves_obs, dim=0).shape: {th.cat(all_leaves_obs, dim=0).shape}")
         cat_features = self.extract_features(th.cat(all_leaves_obs, dim=0))
-        shared_features = self.mlp_extractor.shared_net(cat_features)
         if self.use_leaves_v:
-            latent_vf_root = self.mlp_extractor.value_net(shared_features)
+            values = self.critic(cat_features)
         else:
-            latent_vf_root = self.mlp_extractor.value_net(shared_features[:batch_size])
-        values = self.value_net(latent_vf_root)
+            values = self.critic(cat_features[:batch_size])
         if self.use_leaves_v:
             values_subtrees = val_coef * values + all_rewards_th
         else:

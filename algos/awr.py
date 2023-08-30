@@ -146,10 +146,7 @@ class AWR(OffPolicyAlgorithm):
         # print('training')
         env = self.env if isinstance(self.env, VecNormalize) else None 
         observations = self.replay_buffer._normalize_obs(self.replay_buffer.observations, env)
-        # observations = self.replay_buffer.to_torch(observations)
         next_observations = self.replay_buffer._normalize_obs(self.replay_buffer.next_observations, env)
-        # next_observations = self.replay_buffer.to_torch(next_observations)
-        # print(f"replay buffer: {self.replay_buffer.valid_pos}, pos: {self.replay_buffer.pos}")
         observations = observations[:self.replay_buffer.valid_pos]
         next_observations = next_observations[:self.replay_buffer.valid_pos]
 
@@ -167,7 +164,7 @@ class AWR(OffPolicyAlgorithm):
             self.policy.critic.optimizer.zero_grad()
             value_loss.backward()
             if self.max_grad_norm > 0.0:
-                nn.utils.clip_grad_norm_(self.policy.parameters(), self.max_grad_norm)
+                nn.utils.clip_grad_norm_(self.policy.critic.parameters(), self.max_grad_norm)
 
             self.policy.critic.optimizer.step()
             value_losses.append(value_loss.item())
@@ -199,18 +196,18 @@ class AWR(OffPolicyAlgorithm):
 
             policy_loss = -(log_prob*weights).mean() - self.ent_coef*th.mean(entropy)
 
-            # if self.policy_bound_loss_weight > 0 and isinstance(self.action_space, spaces.Box):
-            #     distrib = self.policy.actor.get_distribution(replay_data.observations)
-            #     val = distrib.mode()
-            #     vio_min = th.clamp(val - self.bound_min, max=0)
-            #     vio_max = th.clamp(val - self.bound_max, min=0)
-            #     violation = vio_min.pow_(2).sum(axis=-1) + vio_max.pow_(2).sum(axis=-1)
-            #     policy_loss += 0.5 * th.mean(violation)
+            if self.policy_bound_loss_weight > 0 and isinstance(self.action_space, spaces.Box):
+                distrib = self.policy.actor.get_distribution(replay_data.observations)
+                val = distrib.mode()
+                vio_min = th.clamp(val - self.bound_min, max=0)
+                vio_max = th.clamp(val - self.bound_max, min=0)
+                violation = vio_min.pow_(2).sum(axis=-1) + vio_max.pow_(2).sum(axis=-1)
+                policy_loss += 0.5 * th.mean(violation)
 
             self.policy.actor.optimizer.zero_grad()
             policy_loss.backward()
             if self.max_grad_norm > 0.0:
-                nn.utils.clip_grad_norm_(self.policy.parameters(), self.max_grad_norm)
+                nn.utils.clip_grad_norm_(self.policy.actor.parameters(), self.max_grad_norm)
             self.policy.actor.optimizer.step()
 
             policy_losses.append(policy_loss.item())

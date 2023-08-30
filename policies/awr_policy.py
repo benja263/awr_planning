@@ -78,6 +78,7 @@ class ContinuousCritic(BaseModel):
         return self.v_net(features).squeeze()
 
 
+
 class Actor(BasePolicy):
     """
     Actor network (policy) for AWR.
@@ -262,6 +263,13 @@ class Actor(BasePolicy):
         distribution = self.get_distribution(obs)
         log_prob = distribution.log_prob(actions)
         return log_prob
+    
+    def get_latent_pi(self, obs: th.Tensor) -> th.Tensor: 
+        features = super().extract_features(obs)
+        return self.latent_pi(features)
+    
+    def get_mean_actions(self, obs: th.Tensor) -> th.Tensor: 
+        return self.action_net(self.get_latent_pi(obs))
 
     def _get_action_dist_from_latent(self, latent_pi: th.Tensor) -> Distribution:
         """

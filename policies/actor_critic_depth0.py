@@ -4,10 +4,10 @@ from typing import Tuple
 # Externals
 import torch as th
 from stable_baselines3.common.policies import ActorCriticCnnPolicy
-from policies.awr_policy import AWRPolicy
+from policies.awr_policy import CnnPolicy
 
 
-class ActorCriticCnnPolicyDepth0(ActorCriticCnnPolicy):
+class ActorCriticCnnPolicyDepth0(CnnPolicy):
     def __init__(self, observation_space, action_space, lr_schedule, **kwargs):
         super(ActorCriticCnnPolicyDepth0, self).__init__(observation_space, action_space, lr_schedule, **kwargs)
         self.gradients_history = {}
@@ -26,6 +26,7 @@ class ActorCriticCnnPolicyDepth0(ActorCriticCnnPolicy):
         return super(ActorCriticCnnPolicyDepth0, self).evaluate_actions(obs, actions)
 
     def add_gradients_history(self):
+        print(list(self.named_parameters()))
         policy_params = {param_name: param for param_name, param in self.named_parameters() if
                          param_name.startswith("action_net")}
         for param_name in policy_params:
