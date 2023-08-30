@@ -75,7 +75,7 @@ class ContinuousCritic(BaseModel):
         # when the features_extractor is shared with the actor
         # print('feature_shape ', obs.shape)
         with th.set_grad_enabled(not self.share_features_extractor):
-            features = self.extract_features(obs, self.features_extractor)
+            features = self.extract_features(obs)
         return self.v_net(features).squeeze()
 
 
@@ -130,7 +130,7 @@ class Actor(BasePolicy):
         )
 
         # Save arguments to re-create object at loading
-        self.features_extractor = features_extractor
+        self.features_extractor = feature_extractor
         self.use_sde = use_sde
         self.sde_features_extractor = None
         self.net_arch = net_arch
@@ -219,7 +219,7 @@ class Actor(BasePolicy):
         :param obs:
         :return: the action distribution.
         """
-        features = super().extract_features(obs, self.features_extractor)
+        features = super().extract_features(obs)
         latent_pi = self.latent_pi(features)
         return self._get_action_dist_from_latent(latent_pi)
 
@@ -267,7 +267,7 @@ class Actor(BasePolicy):
         return log_prob
     
     def get_latent_pi(self, obs: th.Tensor) -> th.Tensor: 
-        features = super().extract_features(obs, self.features_extractor)
+        features = super().extract_features(obs)
         return self.latent_pi(features)
     
     def get_mean_actions(self, obs: th.Tensor) -> th.Tensor: 
