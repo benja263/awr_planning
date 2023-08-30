@@ -68,10 +68,10 @@ class AWR(OffPolicyAlgorithm):
 
         try:
             n_envs = env.num_envs
+            tr_freq = TrainFreq(n_steps // n_envs, TrainFrequencyUnit.STEP)
         except AttributeError:
             n_envs = 1
-        # tr_freq = TrainFreq(n_steps // n_envs, TrainFrequencyUnit.STEP)
-        tr_freq = TrainFreq(n_steps, TrainFrequencyUnit.EPISODE)
+            tr_freq = TrainFreq(n_steps, TrainFrequencyUnit.EPISODE)
         super().__init__(policy=policy,
         env=env,
         policy_base=None,
