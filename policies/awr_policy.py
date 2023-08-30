@@ -130,7 +130,7 @@ class Actor(BasePolicy):
         )
 
         # Save arguments to re-create object at loading
-        self.features_extractor = feature_extractor
+        self.features_extractor = features_extractor
         self.use_sde = use_sde
         self.sde_features_extractor = None
         self.net_arch = net_arch
