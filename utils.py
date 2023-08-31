@@ -85,7 +85,7 @@ def create_parser():
     # experiment_type examples: Runtime_optimization, Debug, Paper_main, Ablation, Hyperparameter_sweep
     parser.add_argument("--experiment_description", type=str, default="",
                         help="Free text to describe experiment sub-goal")
-    parser.add_argument("--hash_buffer_size", type=int, default=10000, help="Size of buffer which stores leaf values")
+    parser.add_argument("--hash_buffer_size", type=int, default=1000000, help="Size of buffer which stores leaf values")
     parser.add_argument("--use_leaves_v", type=str2bool, nargs="?", const=True, default=False,
                         help="Whether to use the value at the leaves or reward only")
     parser.add_argument("--is_cumulative_mode", type=str2bool, nargs="?", const=True, default=False,
@@ -93,7 +93,7 @@ def create_parser():
     parser.add_argument("--regularization", type=float, default=0.001, help="Minimal probability for all actions")
     parser.add_argument("--n_envs", type=int, default=256, help="Number of parallel AWR environments on GPU")
     parser.add_argument("--n_steps", type=int, default=2056, help="Number of steps in the environment per rollout")
-    parser.add_argument("--value_batch_size", type=int, default=64, help="Batch size used to calculate values")
+    parser.add_argument("--value_batch_size", type=int, default=32, help="Batch size used to calculate values")
     parser.add_argument("--learning_starts", type=int, default=10000, help="Number of warm-up iterations")
     parser.add_argument("--beta", type=float, default=1, help="AWR beta parameter")
     # Evaluation fields
