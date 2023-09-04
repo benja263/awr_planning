@@ -334,16 +334,17 @@ class AWRReplayBuffer(ReplayBuffer):
         for env_id in range(self.n_envs):
             # Calculate discounted rewards from the last start position to the current position
             # Handle the buffer wrap-around case
-            if self.pos > self.last_start_pos:
+            start_pos = self.last_start_pos[env_id]
+            if self.pos > start_pos[env_id]:
                 # Standard case: no wrap-around
                 # Calculate discounted rewards from last_start_pos to current pos
-                disc_rew = np.array([self.gamma**(t+1) for t in range(self.pos - self.last_start_pos)])[::-1]*reward[env_id]
-                self.returns[self.last_start_pos:self.pos, env_id] += disc_rew
+                disc_rew = np.array([self.gamma**(t+1) for t in range(self.pos - start_pos)])[::-1]*reward[env_id]
+                self.returns[start_pos:self.pos, env_id] += disc_rew
             else:
                 # Handle wrap-around
-                disc_rew = np.array([self.gamma**(t+1) for t in range(self.buffer_size - self.last_start_pos + self.pos)])[::-1]*reward[env_id]
-                self.returns[self.last_start_pos:, env_id] += disc_rew[:self.buffer_size - self.last_start_pos]
-                self.returns[:self.pos, env_id] += disc_rew[self.buffer_size - self.last_start_pos:self.buffer_size - self.last_start_pos+ self.pos] 
+                disc_rew = np.array([self.gamma**(t+1) for t in range(self.buffer_size - start_pos + self.pos)])[::-1]*reward[env_id]
+                self.returns[start_pos:, env_id] += disc_rew[:self.buffer_size - start_pos]
+                self.returns[:self.pos, env_id] += disc_rew[self.buffer_size - start_pos:self.buffer_size - start_pos + self.pos] 
             # Update latest start position
             if self.dones[self.pos, env_id]:
                 self.last_start_pos[env_id] = self.pos + 1 if self.pos + 1 < self.buffer_size else 0
