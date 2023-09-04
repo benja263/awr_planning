@@ -54,7 +54,7 @@ def main():
     AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": config.n_steps, "batch_size": 256, "normalize_advantage": True,
                   "ent_coef": config.ent_coef, "gae_lambda": 0.95, "policy_gradient_steps": config.policy_gradient_steps, "value_gradient_steps": config.value_gradient_steps, 
                   "learning_starts": config.learning_starts, "value_batch_size": config.value_batch_size, "beta": config.beta,
-                  "tensorboard_log": tensorboard_log, 'episodic': config.episodic}
+                  "tensorboard_log": tensorboard_log, 'episodic': config.episodic, "reward_mode": config.reward_mode}
 
     # Setting AWR models
     if config.tree_depth == 0 and config.run_type == "train":

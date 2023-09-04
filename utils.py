@@ -96,6 +96,7 @@ def create_parser():
     parser.add_argument("--value_batch_size", type=int, default=32, help="Batch size used to calculate values")
     parser.add_argument("--learning_starts", type=int, default=100000, help="Number of warm-up iterations")
     parser.add_argument("--beta", type=float, default=1, help="AWR beta parameter")
+    parser.add_argument("--reward_mode", type=str, default=1, help="AWR reward mode calculation", choices=['monte-carlo', 'gae'])
     # Evaluation fields
     parser.add_argument("--run_type", type=str, default="train", help="Train or evaluate")  # train or evaluate
     parser.add_argument("--model_filename", type=str, default=None, help="Filename to store or load model")

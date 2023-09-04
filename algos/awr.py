@@ -40,6 +40,7 @@ class AWR(OffPolicyAlgorithm):
             buffer_size: int = 100000,
             episodic: bool = False,
             policy_gradient_steps: int=1000,
+            reward_mode: str = 'monte-carlo',
             value_gradient_steps: int=250,
             policy_bound_loss_weight: float = 0,
             tensorboard_log: Optional[str] = None,
@@ -57,7 +58,9 @@ class AWR(OffPolicyAlgorithm):
             if optimizer_class is not None:
                 policy_kwargs['optimizer_class'] = OPTIMIZER[optimizer_class]
 
+        assert reward_mode in ['monte-carlo', 'gae'], "reward_mode must be either ['monte-carlo, 'gae']"
         self.beta = beta
+        self.reward_mode = reward_mode
         self.gae_lambda = gae_lambda
         self.ent_coef = ent_coef
         self.weights_max = weights_max
@@ -150,8 +153,9 @@ class AWR(OffPolicyAlgorithm):
         observations = observations[:self.replay_buffer.valid_pos]
         next_observations = next_observations[:self.replay_buffer.valid_pos]
 
-        values, next_values = self.get_values(observations, next_observations)
-        self.replay_buffer.add_advantages_returns(values, next_values, env=self._vec_normalize_env)
+        if self.reward_mode == 'gae':
+            values, next_values = self.get_values(observations, next_observations)
+            self.replay_buffer.add_advantages_returns(values, next_values, env=self._vec_normalize_env)
 
         value_losses = []
         for gradient_step in range(self.value_gradient_steps):
@@ -171,8 +175,9 @@ class AWR(OffPolicyAlgorithm):
 
 
         policy_losses = []
-        values, next_values = self.get_values(observations, next_observations)
-        self.replay_buffer.add_advantages_returns(values, next_values, env=self._vec_normalize_env)
+        if self.reward_mode == 'gae':
+            values, next_values = self.get_values(observations, next_observations)
+            self.replay_buffer.add_advantages_returns(values, next_values, env=self._vec_normalize_env)
         self._n_updates += self.value_gradient_steps 
 
         for gradient_step in range(self.policy_gradient_steps):
@@ -184,6 +189,8 @@ class AWR(OffPolicyAlgorithm):
                 actions = actions.long().flatten()
 
             advantages = replay_data.advantages
+            if self.reward_mode == 'monte-carlo':
+                advantages = replay_data.returns.squeeze() - self.policy.predict_values(replay_data.observations).squeeze()
 
             if self.normalize_advantage:
                 adv_mean, adv_std = advantages.mean(), advantages.std() 
@@ -284,7 +291,7 @@ class AWRReplayBuffer(ReplayBuffer):
         self.advantages = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
         self.gamma = gamma 
         self.gae_lambda = gae_lambda
-
+        self.last_start_pos = np.zeros(self.n_envs)
         self.valid_pos = 0
 
     def add(
@@ -304,7 +311,6 @@ class AWRReplayBuffer(ReplayBuffer):
 
         # Reshape to handle multi-dim and discrete action spaces, see GH #970 #1392
         action = action.reshape((self.n_envs, self.action_dim))
-
         # Copy to avoid modification by reference
         if isinstance(obs, th.Tensor):
             obs = obs.cpu()
@@ -322,8 +328,25 @@ class AWRReplayBuffer(ReplayBuffer):
             done = done.cpu()
         self.actions[self.pos] = np.array(action).copy()
         self.rewards[self.pos] = np.array(reward).copy()
+        self.returns[self.pos] = np.array(reward).copy()
         self.dones[self.pos] = np.array(done).copy()
-
+        # monte-carlo returns
+        for env_id in range(self.n_envs):
+            # Calculate discounted rewards from the last start position to the current position
+            # Handle the buffer wrap-around case
+            if self.pos > self.last_start_pos:
+                # Standard case: no wrap-around
+                # Calculate discounted rewards from last_start_pos to current pos
+                disc_rew = np.array([self.gamma**(t+1) for t in range(self.pos - self.last_start_pos)])[::-1]*reward[env_id]
+                self.returns[self.last_start_pos:self.pos, env_id] += disc_rew
+            else:
+                # Handle wrap-around
+                disc_rew = np.array([self.gamma**(t+1) for t in range(self.buffer_size - self.last_start_pos + self.pos)])[::-1]*reward[env_id]
+                self.returns[self.last_start_pos:, env_id] += disc_rew[:self.buffer_size - self.last_start_pos]
+                self.returns[:self.pos, env_id] += disc_rew[self.buffer_size - self.last_start_pos:self.buffer_size - self.last_start_pos+ self.pos] 
+            # Update latest start position
+            if self.dones[self.pos, env_id]:
+                self.last_start_pos[env_id] = self.pos + 1 if self.pos + 1 < self.buffer_size else 0
         if self.handle_timeout_termination:
             self.timeouts[self.pos] = np.array([info.get("TimeLimit.truncated", False) for info in infos])
 
@@ -331,7 +354,7 @@ class AWRReplayBuffer(ReplayBuffer):
         if self.pos == self.buffer_size:
             self.full = True
             self.pos = 0
-
+        
         self.valid_pos = self.buffer_size if self.full else self.pos
 
     
