@@ -115,8 +115,8 @@ class AWR(OffPolicyAlgorithm):
                 batch_obs = self.replay_buffer.to_torch(observations[i:i+self.value_batch_size, env_idx])
                 batch_next_obs = self.replay_buffer.to_torch(next_observations[i:i+self.value_batch_size, env_idx])
                 # print(f"obs shape: {batch_obs.shape}")
-                torch_values = self.policy.predict_values(batch_obs)
-                torch_next_values = self.policy.predict_values(batch_next_obs)
+                torch_values = self.policy.critic(batch_obs)
+                torch_next_values = self.policy.critic(batch_next_obs)
                 
                 values[i:i+self.value_batch_size, env_idx] = torch_values.detach().cpu().numpy().squeeze()
                 next_values[i:i+self.value_batch_size, env_idx] = torch_next_values.detach().cpu().numpy().squeeze()
