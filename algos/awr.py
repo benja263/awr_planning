@@ -291,7 +291,7 @@ class AWRReplayBuffer(ReplayBuffer):
         self.advantages = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
         self.gamma = gamma 
         self.gae_lambda = gae_lambda
-        self.last_start_pos = np.zeros(self.n_envs)
+        self.last_start_pos = np.zeros(self.n_envs, dtype=np.int32)
         self.valid_pos = 0
 
     def add(
