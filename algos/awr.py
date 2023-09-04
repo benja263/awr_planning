@@ -335,7 +335,7 @@ class AWRReplayBuffer(ReplayBuffer):
             # Calculate discounted rewards from the last start position to the current position
             # Handle the buffer wrap-around case
             start_pos = self.last_start_pos[env_id]
-            if self.pos > start_pos[env_id]:
+            if self.pos > start_pos:
                 # Standard case: no wrap-around
                 # Calculate discounted rewards from last_start_pos to current pos
                 disc_rew = np.array([self.gamma**(t+1) for t in range(self.pos - start_pos)])[::-1]*reward[env_id]
