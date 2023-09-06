@@ -53,7 +53,7 @@ def main():
     awr_def_lr = get_linear_fn(config.actor_lr, 0, 1)
     AWR_params = {"learning_rate": awr_def_lr, "gamma": 0.99, "n_steps": config.n_steps, "batch_size": 256, "normalize_advantage": True,
                   "ent_coef": config.ent_coef, "gae_lambda": 0.95, "policy_gradient_steps": config.policy_gradient_steps, "value_gradient_steps": config.value_gradient_steps, 
-                  "learning_starts": config.learning_starts, "value_batch_size": config.value_batch_size, "beta": config.beta,
+                  "learning_starts": config.learning_starts, "value_batch_size": config.value_batch_size, "beta": config.beta, "buffer_size": config.buffer_size,
                   "tensorboard_log": tensorboard_log, 'episodic': config.episodic, "reward_mode": config.reward_mode}
 
     # Setting AWR models
@@ -64,11 +64,10 @@ def main():
         # Input max width sets the maximum number of environments, since the leaves are opened we divide it here to match
         max_width = int(config.max_width / env.action_space.n) if config.max_width != -1 else -1
         policy_kwargs = {"step_env": env, "gamma": config.gamma, "tree_depth": config.tree_depth,
-                         "buffer_size": hash_buffer_size, "learn_alpha": config.learn_alpha,
+                         "buffer_size": config.hash_buffer_size, "learn_alpha": config.learn_alpha,
                          "learn_beta": config.learn_beta, "max_width": max_width, "use_leaves_v": config.use_leaves_v, 
                          'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr},
                          "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
-        AWR_params['buffer_size'] = hash_buffer_size
         model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=1, policy_kwargs=policy_kwargs, **AWR_params)
 
     # save agent folder and name
