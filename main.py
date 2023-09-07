@@ -6,6 +6,7 @@ import os
 # sys.path.append("../stable-baselines3/")
 
 # Externals
+import torch 
 import wandb
 import numpy as np
 from algos.awr import AWR
@@ -31,6 +32,16 @@ def main():
     parser = create_parser()
     wandb.init(config=parser.parse_args(), project="pg-tree")
     config = wandb.config
+
+    
+    # Check if CUDA is available
+    if torch.cuda.is_available():
+        # Get the current default CUDA device
+        current_device = torch.cuda.current_device()
+        print(f"Current CUDA device index: {current_device}")
+        print(f"Current CUDA device name: {torch.cuda.get_device_name(current_device)}")
+    else:
+        print("CUDA is not available.")
 
     set_seed(config.seed)
     # Setting environment
