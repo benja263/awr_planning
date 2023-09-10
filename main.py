@@ -75,7 +75,7 @@ def main():
         # Input max width sets the maximum number of environments, since the leaves are opened we divide it here to match
         max_width = int(config.max_width / env.action_space.n) if config.max_width != -1 else -1
         policy_kwargs = {"step_env": env, "gamma": config.gamma, "tree_depth": config.tree_depth,
-                         "buffer_size": config.hash_buffer_size, "learn_alpha": config.learn_alpha,
+                         "buffer_size": hash_buffer_size, "learn_alpha": config.learn_alpha,
                          "learn_beta": config.learn_beta, "max_width": max_width, "use_leaves_v": config.use_leaves_v, 
                          'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr},
                          "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
