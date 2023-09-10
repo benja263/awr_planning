@@ -1,27 +1,46 @@
-FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04 as base
-RUN apt-get update
-RUN apt-get install -y python3.6
-RUN apt-get install -y python3-pip
-RUN ln -s /usr/bin/python3.6 /usr/bin/python
-RUN ln -s /usr/bin/pip3 /usr/bin/pip
-RUN apt-get -y install git
+FROM nvidia/cuda:11.7.1-devel-ubuntu22.04
 
-RUN pip install torch==1.2.0
-RUN pip install torchvision==0.4.0
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=US
 
-RUN pip install psutil
-RUN pip install pytz
-RUN pip install tqdm
-RUN pip install atari_py
+RUN apt-get -y update -qq && apt-get install -y --no-install-recommends \
+        build-essential \
+        ca-certificates \
+        clang \
+        gcc \
+        cmake \
+        htop \
+        curl \
+        git \
+        libomp-dev \
+        libsm6 \
+        libssl-dev \
+        libxrender-dev \
+        libxext-dev \
+        iproute2 \
+        python3.9 \
+        python3-dev \
+        python3-setuptools \
+        python3-pip \
+        vim \
+        ssh \
+        wget \
+        vim \
+        zip \
+    && \
+    rm -rf /var/lib/apt/lists/* && \
+    ln -s /usr/bin/python3.9 /usr/bin/python
+ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64"
 
-RUN git clone https://github.com/NVIDIA/apex
-RUN pip install --upgrade pip
-RUN cd apex && pip install -v --global-option="--cpp_ext" --global-option="--cuda_ext" ./
+RUN pip install --upgrade cython \
+                          cloudpickle \
+                          gym[atari] \
+                          opencv-python \
+                          psutil \
+                          torch==1.11.0 \
+                          torchvision==0.12.0 \
+                          tqdm
 
-RUN apt-get install -y libsm6 libxrender-dev
-RUN pip install opencv-python
-
-RUN pip install cython
-RUN apt-get install zlib1g-dev
-RUN git clone --recursive https://github.com/NVLabs/cule
-RUN cd cule && python setup.py install
+RUN git clone -b master --recursive https://github.com/NVLabs/cule && \
+    cd cule && \
+    python setup.py install
