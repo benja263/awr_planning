@@ -1,46 +1,18 @@
-FROM nvidia/cuda:11.7.1-devel-ubuntu22.04
-
-ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=US
-
-RUN apt-get -y update -qq && apt-get install -y --no-install-recommends \
-        build-essential \
-        ca-certificates \
-        clang \
-        gcc \
-        cmake \
-        htop \
-        curl \
-        git \
-        libomp-dev \
-        libsm6 \
-        libssl-dev \
-        libxrender-dev \
-        libxext-dev \
-        iproute2 \
-        python3.9 \
-        python3-dev \
-        python3-setuptools \
-        python3-pip \
-        vim \
-        ssh \
-        wget \
-        vim \
-        zip \
-    && \
-    rm -rf /var/lib/apt/lists/* && \
-    ln -s /usr/bin/python3.9 /usr/bin/python
-ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64"
-
-RUN pip install --upgrade cython \
-                          cloudpickle \
-                          gym[atari] \
-                          opencv-python \
-                          psutil \
-                          torch==1.11.0 \
-                          torchvision==0.12.0 \
-                          tqdm
-
-RUN git clone -b master --recursive https://github.com/NVLabs/cule && \
-    cd cule && \
-    python setup.py install
+FROM nvcr.io/nvidian/pytorch:20.12-py3 as base
+RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
+RUN apt-get install ffmpeg libsm6 libxext6 libxrender-dev -y
+RUN pip install atari_py
+RUN pip install wandb plotly
+RUN git clone --recursive https://github.com/NVLabs/cule -b bfs
+RUN cd cule && python setup.py install && cd ..
+RUN git clone https://github.com/benja263/awr_planning.git
+RUN pip install stable-baselines3==1.4.0 -U --no-deps
+RUN pip uninstall -y importlib_metadata && pip install importlib_metadata -U
+RUN pip3 install --upgrade requests
+RUN wget http://www.atarimania.com/roms/Roms.rar
+RUN mkdir /workspace/ROM/
+RUN apt-get install unrar
+RUN unrar e -y /workspace/Roms.rar /workspace/ROM/
+RUN python -m atari_py.import_roms /workspace/ROM/
+RUN pip install mujoco-py
