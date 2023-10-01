@@ -85,6 +85,7 @@ def main():
     # save agent folder and name
     saved_agents_dir = "saved_agents"
     if config.run_type == "train":
+        print("Training Mode")
         if not os.path.isdir(saved_agents_dir):
             os.makedirs(saved_agents_dir)
         # save agent

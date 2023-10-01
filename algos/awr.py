@@ -92,6 +92,7 @@ class AWR(OffPolicyAlgorithm):
         verbose=verbose,
         device=device,
         learning_starts=learning_starts,
+        gradient_steps=policy_gradient_steps,
         batch_size=batch_size,
         buffer_size=buffer_size,
         gamma=gamma,
