@@ -17,6 +17,7 @@ class CuleEnv(gym.Env):
         self.env_kwargs = env_kwargs
         cart = AtariRom(env_kwargs["env_name"])
         actions = cart.minimal_actions()
+        print('minimal actions', actions)
         # self.env = AtariEnv(num_envs=1, device=torch.device("cpu"), **env_kwargs)
         self.env = AtariEnv(num_envs=1, device='cuda:0', **env_kwargs)
         super(AtariEnv, self.env).reset(0)
