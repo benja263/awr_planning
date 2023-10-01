@@ -259,7 +259,6 @@ class Actor(BasePolicy):
         # Preprocess the observation if needed
         distribution = self.get_distribution(obs)
         actions = distribution.get_actions(deterministic=deterministic)
-        print("actions", actions)
         return actions
     
     def action_log_prob(self, obs: th.Tensor, actions: th.Tensor) -> Tuple[th.Tensor, th.Tensor]:
@@ -510,7 +509,6 @@ class AWRPolicy(BasePolicy):
 
     def forward(self, obs: th.Tensor, deterministic: bool = False) -> th.Tensor:
         actions = self._predict(obs, deterministic=deterministic)
-        print("forward actions", actions)
         return actions
 
     def _predict(self, observation: th.Tensor, deterministic: bool = False) -> th.Tensor:
