@@ -18,7 +18,7 @@ class CuleEnv(gym.Env):
         cart = AtariRom(env_kwargs["env_name"])
         actions = cart.minimal_actions()
         # self.env = AtariEnv(num_envs=1, device=torch.device("cpu"), **env_kwargs)
-        self.env = AtariEnv(num_envs=1, device=device, **env_kwargs)
+        self.env = AtariEnv(num_envs=1, device='cuda:0', **env_kwargs)
         super(AtariEnv, self.env).reset(0)
         self.env.reset(initial_steps=1, verbose=1)
         self.lives = 0  # Life counter (used in DeepMind training)
