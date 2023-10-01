@@ -110,7 +110,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
                 del self.obs2timestep_dict[self.timestep2obs_dict[self.time_step - self.buffer_size]]
             del self.timestep2obs_dict[self.time_step - self.buffer_size]
         self.time_step += 1
-        print(f"actions: {actions}, value_root: {value_root}")
+        print(f"actions: {actions} shape: {actions.shape}, value_root: {value_root}")
         return actions, value_root, log_prob
 
     def evaluate_actions(self, obs: th.Tensor, actions: th.Tensor) -> Tuple[th.Tensor, th.Tensor, th.Tensor]:
