@@ -69,7 +69,6 @@ class AWR(OffPolicyAlgorithm):
         self.policy_bound_loss_weight = policy_bound_loss_weight
         self.max_grad_norm = max_grad_norm
         self.normalize_advantage = normalize_advantage
-        print("learning starts", learning_starts)
 
         try:
             n_envs = env.num_envs
