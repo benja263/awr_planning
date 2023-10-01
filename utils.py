@@ -68,6 +68,7 @@ def create_parser():
     parser.add_argument("--seed", type=int, default=4, help="Seed for all pseudo-random generators")
     parser.add_argument("--env_name", type=str, default="AlienNoFrameskip-v4", help="Environment name")
     parser.add_argument("--gamma", type=float, default=0.99, help="Discount factor")
+    parser.add_argument("--noop_max", type=int, default=30, help="noop max")
     parser.add_argument("--ent_coef", type=float, default=0., help="entropy coefficient")
     parser.add_argument("--tree_depth", type=int, default=0, help="SoftTreeMax depth (0 corresponds to standard PPO)")
     parser.add_argument("--clip_reward", type=str2bool, nargs="?", const=True, default=True,

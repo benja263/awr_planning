@@ -55,7 +55,7 @@ def main():
                               clip_reward=config.clip_reward, fire_reset=fire_reset,
                               n_envs=config.n_envs)
     else:
-        env = CuleEnv(env_kwargs=env_kwargs, device=get_device(),
+        env = CuleEnv(env_kwargs=env_kwargs, device=get_device(), noop_max=config.noop_max,
                       clip_reward=config.clip_reward, fire_reset=fire_reset, n_frame_stack=4)
     print("Environment:", config.env_name, "Num actions:", env.action_space.n, "Tree depth:", config.tree_depth)
 
