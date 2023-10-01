@@ -146,7 +146,7 @@ class AWR(OffPolicyAlgorithm):
         """
          # Switch to train mode (this affects batch norm / dropout)
         self.policy.set_training_mode(True)
-        # print('training')
+        print('training')
         env = self.env if isinstance(self.env, VecNormalize) else None 
         observations = self.replay_buffer._normalize_obs(self.replay_buffer.observations, env)
         next_observations = self.replay_buffer._normalize_obs(self.replay_buffer.next_observations, env)

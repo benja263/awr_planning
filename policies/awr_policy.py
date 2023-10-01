@@ -258,7 +258,9 @@ class Actor(BasePolicy):
         """
         # Preprocess the observation if needed
         distribution = self.get_distribution(obs)
-        return distribution.get_actions(deterministic=deterministic)
+        actions = distribution.get_actions(deterministic=deterministic)
+        print("actions", actions)
+        return actions
     
     def action_log_prob(self, obs: th.Tensor, actions: th.Tensor) -> Tuple[th.Tensor, th.Tensor]:
           # Preprocess the observation if needed
