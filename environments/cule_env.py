@@ -89,8 +89,14 @@ class CuleEnv(gym.Env):
         if self.training:
             if lives < self.lives and lives > 0:  # Lives > 0 for Q*bert
                 self.life_termination = True  # not done  # Only set flag when not truly done
-                done = True
+                # done = True
+                done = False
         self.lives = lives
+
+        # Check if all lives are lost
+        if lives == 0:
+            done = True
+    
         # Return state, reward, done
         return torch.stack(list(self.state_buffer), 0).cpu().numpy(), reward[0].cpu().numpy(), done, info
 
