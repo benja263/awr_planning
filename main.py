@@ -79,8 +79,9 @@ def main():
                          "learn_beta": config.learn_beta, "max_width": max_width, "use_leaves_v": config.use_leaves_v, 
                          'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr},
                          "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
+        
         model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=1, policy_kwargs=policy_kwargs, **AWR_params)
-
+    print("Running AWR model: ", model)
     # save agent folder and name
     saved_agents_dir = "saved_agents"
     if config.run_type == "train":
