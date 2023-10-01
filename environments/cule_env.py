@@ -66,7 +66,7 @@ class CuleEnv(gym.Env):
             # Perform up to 30 random no-ops before starting
             noops = np.random.randint(self.noop_max + 1)
             obs = self.env.reset(initial_steps=noops, verbose=1)
-            self.env.lives[0] = 5
+            self.env.lives[0] = 50
             obs = obs[0, :, :, 0].to(self.device)
         self.last_frame = obs
         self.state_buffer.append(obs)
