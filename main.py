@@ -45,7 +45,7 @@ def main():
 
     set_seed(config.seed)
     # Setting environment
-    env_kwargs = dict(env_name=config.env_name, color_mode="gray", repeat_prob=0.0, rescale=True, episodic_life=False,
+    env_kwargs = dict(env_name=config.env_name, color_mode="rgb", repeat_prob=0.0, rescale=True, episodic_life=True,
                       frameskip=4)
     fire_reset = config.env_name not in ["AsterixNoFrameskip-v4", "CrazyClimberNoFrameskip-v4",
                                          "FreewayNoFrameskip-v4", "MsPacmanNoFrameskip-v4",
