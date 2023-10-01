@@ -49,10 +49,10 @@ class CuleEnv(gym.Env):
             return obs
         obs, _, done, _ = self.step(1)
         if done:
-            self.reset_no_fire()
+            return self.reset_no_fire()
         obs, _, done, _ = self.step(2)
         if done:
-            self.reset_no_fire()
+            return self.reset_no_fire()
         return obs
 
     def reset_no_fire(self):
