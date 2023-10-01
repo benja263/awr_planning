@@ -48,7 +48,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         :return: action, value and log probability of the action
         """
         # print()
-        print(f"forward: obs.shape: {obs.shape}")
+        # print(f"forward: obs.shape: {obs.shape}")
         hash_obs = self.hash_obs(obs)[0].item()
         if hash_obs in self.obs2leaves_dict:
             leaves_observations, rewards, first_action = self.obs2leaves_dict.get(hash_obs)
@@ -110,7 +110,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
                 del self.obs2timestep_dict[self.timestep2obs_dict[self.time_step - self.buffer_size]]
             del self.timestep2obs_dict[self.time_step - self.buffer_size]
         self.time_step += 1
-        print(f"actions: {actions} shape: {actions.shape}, value_root: {value_root}")
+        # print(f"actions: {actions} shape: {actions.shape}, value_root: {value_root}")
         return actions, value_root, log_prob
 
     def evaluate_actions(self, obs: th.Tensor, actions: th.Tensor) -> Tuple[th.Tensor, th.Tensor, th.Tensor]:
