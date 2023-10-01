@@ -91,6 +91,7 @@ class CuleEnv(gym.Env):
                 self.life_termination = True  # not done  # Only set flag when not truly done
                 # done = True
                 done = False
+                lives -= 1  # Decrement the lives count
         self.lives = lives
 
         # Check if all lives are lost
