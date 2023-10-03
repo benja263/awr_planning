@@ -69,6 +69,7 @@ def main():
                   "ent_coef": config.ent_coef, "gae_lambda": 0.95, "policy_gradient_steps": config.policy_gradient_steps, "value_gradient_steps": config.value_gradient_steps, 
                   "learning_starts": config.learning_starts, "value_batch_size": config.value_batch_size, "beta": config.beta, "buffer_size": config.buffer_size,
                   "tensorboard_log": tensorboard_log, 'episodic': config.episodic, "reward_mode": config.reward_mode}
+    hash_buffer_size = max(config.hash_buffer_size, AWR_params["n_steps"])
     # Input max width sets the maximum number of environments, since the leaves are opened we divide it here to match
     max_width = int(config.max_width / env.action_space.n) if config.max_width != -1 else -1
     policy_kwargs = {"step_env": env, "gamma": config.gamma, "tree_depth": config.tree_depth,
@@ -81,8 +82,7 @@ def main():
     if config.tree_depth == 0 and config.run_type == "train":
         model = AWR(policy=ActorCriticCnnPolicyDepth0, env=env, verbose=2, **AWR_params, policy_kwargs=policy_kwargs)
     else:        # Hash buffer saves previous states and their trees for reuse in evaluate_actions
-        hash_buffer_size = max(config.hash_buffer_size, AWR_params["n_steps"])
-        model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=1, policy_kwargs=policy_kwargs, **AWR_params)
+        model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=2, policy_kwargs=policy_kwargs, **AWR_params)
     # save agent folder and name
     saved_agents_dir = "saved_agents"
     if config.run_type == "train":
