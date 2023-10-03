@@ -73,7 +73,7 @@ def main():
 
     # Setting AWR models
     if config.tree_depth == 0 and config.run_type == "train":
-        policy_kwargs = {"gamma": config.gamma,
+        policy_kwargs = {
                 'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr}}
     
         model = AWR(policy=ActorCriticCnnPolicyDepth0, env=env, verbose=2, **AWR_params, policy_kwargs=policy_kwargs)
