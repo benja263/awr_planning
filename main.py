@@ -50,16 +50,16 @@ def main():
     fire_reset = config.env_name not in ["AsterixNoFrameskip-v4", "CrazyClimberNoFrameskip-v4",
                                          "FreewayNoFrameskip-v4", "MsPacmanNoFrameskip-v4",
                                          "SkiingNoFrameskip-v4", "TutankhamNoFrameskip-v4"]
-    # if config.tree_depth == 0 and config.run_type == "train":
-    #     env = CuleEnvMultiple(env_kwargs=env_kwargs, device="cuda:0",
-    #                           clip_reward=config.clip_reward, fire_reset=fire_reset,
-    #                           n_envs=config.n_envs)
-    # else:
-    #     env = CuleEnv(env_kwargs=env_kwargs, device=get_device(), noop_max=config.noop_max,
-    #                   clip_reward=config.clip_reward, fire_reset=fire_reset, n_frame_stack=4)
-    env = CuleEnvMultiple(env_kwargs=env_kwargs, device="cuda:0",
+    if config.tree_depth == 0 and config.run_type == "train":
+        env = CuleEnvMultiple(env_kwargs=env_kwargs, device="cuda:0",
                               clip_reward=config.clip_reward, fire_reset=fire_reset,
                               n_envs=config.n_envs)
+    else:
+        env = CuleEnv(env_kwargs=env_kwargs, device=get_device(), noop_max=config.noop_max,
+                      clip_reward=config.clip_reward, fire_reset=fire_reset, n_frame_stack=4)
+    # env = CuleEnvMultiple(env_kwargs=env_kwargs, device="cuda:0",
+    #                           clip_reward=config.clip_reward, fire_reset=fire_reset,
+    #                           n_envs=config.n_envs)
     print("Environment:", config.env_name, "Num actions:", env.action_space.n, "Tree depth:", config.tree_depth)
 
     tensorboard_log = f"./runs/{wandb.run.id}"
@@ -69,20 +69,19 @@ def main():
                   "ent_coef": config.ent_coef, "gae_lambda": 0.95, "policy_gradient_steps": config.policy_gradient_steps, "value_gradient_steps": config.value_gradient_steps, 
                   "learning_starts": config.learning_starts, "value_batch_size": config.value_batch_size, "beta": config.beta, "buffer_size": config.buffer_size,
                   "tensorboard_log": tensorboard_log, 'episodic': config.episodic, "reward_mode": config.reward_mode}
-
+    # Input max width sets the maximum number of environments, since the leaves are opened we divide it here to match
+    max_width = int(config.max_width / env.action_space.n) if config.max_width != -1 else -1
+    policy_kwargs = {"step_env": env, "gamma": config.gamma, "tree_depth": config.tree_depth,
+                    "buffer_size": hash_buffer_size, "learn_alpha": config.learn_alpha,
+                    "learn_beta": config.learn_beta, "max_width": max_width, "use_leaves_v": config.use_leaves_v, 
+                    'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr},
+                    "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
+    
     # Setting AWR models
     if config.tree_depth == 0 and config.run_type == "train":
-        model = AWR(policy=ActorCriticCnnPolicyDepth0, env=env, verbose=2, **AWR_params)
+        model = AWR(policy=ActorCriticCnnPolicyDepth0, env=env, verbose=2, **AWR_params, policy_kwargs=policy_kwargs)
     else:        # Hash buffer saves previous states and their trees for reuse in evaluate_actions
         hash_buffer_size = max(config.hash_buffer_size, AWR_params["n_steps"])
-        # Input max width sets the maximum number of environments, since the leaves are opened we divide it here to match
-        max_width = int(config.max_width / env.action_space.n) if config.max_width != -1 else -1
-        policy_kwargs = {"step_env": env, "gamma": config.gamma, "tree_depth": config.tree_depth,
-                         "buffer_size": hash_buffer_size, "learn_alpha": config.learn_alpha,
-                         "learn_beta": config.learn_beta, "max_width": max_width, "use_leaves_v": config.use_leaves_v, 
-                         'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr},
-                         "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
-        
         model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=1, policy_kwargs=policy_kwargs, **AWR_params)
     # save agent folder and name
     saved_agents_dir = "saved_agents"

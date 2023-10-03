@@ -17,9 +17,7 @@ class CuleEnv(gym.Env):
         self.env_kwargs = env_kwargs
         cart = AtariRom(env_kwargs["env_name"])
         actions = cart.minimal_actions()
-        print('minimal actions', actions)
-        # self.env = AtariEnv(num_envs=1, device=torch.device("cpu"), **env_kwargs)
-        self.env = AtariEnv(num_envs=1, device='cuda:0', **env_kwargs)
+        self.env = AtariEnv(num_envs=1, device=torch.device("cpu"), **env_kwargs)
         super(AtariEnv, self.env).reset(0)
         self.env.reset(initial_steps=1, verbose=1)
         self.lives = 0  # Life counter (used in DeepMind training)
@@ -89,15 +87,8 @@ class CuleEnv(gym.Env):
         if self.training:
             if lives < self.lives and lives > 0:  # Lives > 0 for Q*bert
                 self.life_termination = True  # not done  # Only set flag when not truly done
-                # done = True
-                done = False
-                lives -= 1  # Decrement the lives count
+                done = True
         self.lives = lives
-
-        # Check if all lives are lost
-        if lives == 0:
-            done = True
-    
         # Return state, reward, done
         return torch.stack(list(self.state_buffer), 0).cpu().numpy(), reward[0].cpu().numpy(), done, info
 
