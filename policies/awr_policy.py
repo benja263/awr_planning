@@ -256,6 +256,7 @@ class Actor(BasePolicy):
         :param deterministic: Whether to sample or use deterministic actions
         :return: action, value and log probability of the action
         """
+        print("awr forward actor")
         # Preprocess the observation if needed
         distribution = self.get_distribution(obs)
         actions = distribution.get_actions(deterministic=deterministic)
