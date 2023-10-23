@@ -508,6 +508,7 @@ class AWRPolicy(BasePolicy):
         return log_prob, entropy
 
     def forward(self, obs: th.Tensor, deterministic: bool = False) -> th.Tensor:
+        print("forward normal awr")
         actions = self._predict(obs, deterministic=deterministic)
         return actions
 
