@@ -73,7 +73,6 @@ class ContinuousCritic(BaseModel):
     def forward(self, obs: th.Tensor) -> Tuple[th.Tensor, ...]:
         # Learn the features extractor using the policy loss only
         # when the features_extractor is shared with the actor
-        # print('feature_shape ', obs.shape)
         with th.set_grad_enabled(not self.share_features_extractor):
             features = self.extract_features(obs)
         return self.v_net(features).squeeze()
@@ -256,7 +255,6 @@ class Actor(BasePolicy):
         :param deterministic: Whether to sample or use deterministic actions
         :return: action, value and log probability of the action
         """
-        print("awr forward actor")
         # Preprocess the observation if needed
         distribution = self.get_distribution(obs)
         actions = distribution.get_actions(deterministic=deterministic)
@@ -509,7 +507,6 @@ class AWRPolicy(BasePolicy):
         return log_prob, entropy
 
     def forward(self, obs: th.Tensor, deterministic: bool = False) -> th.Tensor:
-        print("forward normal awr")
         actions = self._predict(obs, deterministic=deterministic)
         return actions
 

@@ -57,9 +57,7 @@ def main():
     else:
         env = CuleEnv(env_kwargs=env_kwargs, device=get_device(), noop_max=config.noop_max,
                       clip_reward=config.clip_reward, fire_reset=fire_reset, n_frame_stack=4)
-    # env = CuleEnvMultiple(env_kwargs=env_kwargs, device="cuda:0",
-    #                           clip_reward=config.clip_reward, fire_reset=fire_reset,
-    #                           n_envs=config.n_envs)
+
     print("Environment:", config.env_name, "Num actions:", env.action_space.n, "Tree depth:", config.tree_depth)
 
     tensorboard_log = f"./runs/{wandb.run.id}"
@@ -86,7 +84,6 @@ def main():
                 'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr},
                 "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
         # Input max width sets the maximum number of environments, since the leaves are opened we divide it here to match
-       
         model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=2, policy_kwargs=policy_kwargs, **AWR_params)
     # save agent folder and name
     saved_agents_dir = "saved_agents"
@@ -96,7 +93,7 @@ def main():
         # save agent
         model_filename = "{}/{}".format(saved_agents_dir, wandb.run.id)
         callbacks = [WandbTrainingCallback()]
-        model.learn(total_timesteps=config.total_timesteps, log_interval=1, callback=callbacks)
+        model.learn(total_timesteps=config.total_timesteps, log_interval=10, callback=callbacks)
         print("Saving model in " + model_filename)
         model.policy.save(model_filename)
     elif config.run_type == "evaluate":

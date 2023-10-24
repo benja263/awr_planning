@@ -64,7 +64,7 @@ def create_parser():
     parser.add_argument("--total_timesteps", type=int, default=200000000,
                         help="Number of environment steps for training")
     parser.add_argument("--actor_lr", type=float, default=5.0e-5, help="Optimizer learning rate")
-    parser.add_argument("--critic_lr", type=float, default=1.0e-2, help="Optimizer learning rate")
+    parser.add_argument("--critic_lr", type=float, default=1.0e-4, help="Optimizer learning rate")
     parser.add_argument("--seed", type=int, default=4, help="Seed for all pseudo-random generators")
     parser.add_argument("--env_name", type=str, default="AlienNoFrameskip-v4", help="Environment name")
     parser.add_argument("--gamma", type=float, default=0.99, help="Discount factor")
@@ -94,7 +94,7 @@ def create_parser():
                         help="True for Cumulative SoftTreeMax. False for Exponentiated SoftTreeMax")
     parser.add_argument("--regularization", type=float, default=0.001, help="Minimal probability for all actions")
     parser.add_argument("--n_envs", type=int, default=256, help="Number of parallel AWR environments on GPU")
-    parser.add_argument("--n_steps", type=int, default=2056, help="Number of steps in the environment per rollout")
+    parser.add_argument("--n_steps", type=int, default=4, help="Number of steps in the environment per rollout")
     parser.add_argument("--value_batch_size", type=int, default=32, help="Batch size used to calculate values")
     parser.add_argument("--learning_starts", type=int, default=100000, help="Number of warm-up iterations")
     parser.add_argument("--beta", type=float, default=1, help="AWR beta parameter")
@@ -103,6 +103,6 @@ def create_parser():
     parser.add_argument("--run_type", type=str, default="train", help="Train or evaluate")  # train or evaluate
     parser.add_argument("--model_filename", type=str, default=None, help="Filename to store or load model")
     parser.add_argument("--n_eval_episodes", type=int, default=200, help="Number of evaluation episodes")
-    parser.add_argument("--value_gradient_steps", type=int, default=200, help="Number of gradeient steps for value function")
-    parser.add_argument("--policy_gradient_steps", type=int, default=1000, help="Number of gradeient steps for policy")
+    parser.add_argument("--value_gradient_steps", type=int, default=1, help="Number of gradeient steps for value function")
+    parser.add_argument("--policy_gradient_steps", type=int, default=1, help="Number of gradeient steps for policy")
     return parser

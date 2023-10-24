@@ -7,7 +7,7 @@ parameters:
   experiment_type:
     values: [ "Paper_main" ]
   experiment_description:
-    values: [ "All games all depths" ]
+    values: [ "All games shallow depths" ]
   tree_depth:
     values: [ 1, 2]
   seed:
@@ -23,7 +23,7 @@ parameters:
       'AtlantisNoFrameskip-v4',
       'BattleZoneNoFrameskip-v4',
       'BerzerkNoFrameskip-v4',
-      'BreakoutNoFrameskip-v4',
+      # 'BreakoutNoFrameskip-v4',
       'CentipedeNoFrameskip-v4',
       'ChopperCommandNoFrameskip-v4',
       'CrazyClimberNoFrameskip-v4',
