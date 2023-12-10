@@ -1,0 +1,21 @@
+program: main.py
+method: grid
+metric:
+  goal: maximize
+  name: episodic_reward
+parameters:
+  experiment_type:
+    values: [ "Paper_main" ]
+  experiment_description:
+    values: [ "All games depth 0" ]
+  tree_depth:
+    values: [0]
+  seed:
+    values: [1, 2]
+  max_width:
+    values: [-1]
+  env_name:
+    values: [
+      'PhoenixNoFrameskip-v4',
+     ]
+
