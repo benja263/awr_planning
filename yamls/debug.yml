@@ -7,9 +7,9 @@ parameters:
   experiment_type:
     values: [ "Paper_main" ]
   experiment_description:
-    values: [ "All games depth 0" ]
+    values: [ "PhoenixNoFrameskip games depth 1" ]
   tree_depth:
-    values: [0]
+    values: [1]
   seed:
     values: [1, 2]
   max_width:
