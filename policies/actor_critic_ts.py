@@ -277,7 +277,6 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
 
         :param path: (str)
         """
-        time_step = self.time_step,
         th.save({"state_dict": self.state_dict(), "data": self._get_data(),
                  "alpha": self.alpha, "beta": self.beta, "time_step": self.time_step}, path)
 
