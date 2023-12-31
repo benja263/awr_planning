@@ -38,7 +38,7 @@ class CuleEnv(gym.Env):
         self.action_space = spaces.Discrete(len(actions))
 
     def _reset_buffer(self):
-        print(f"Reset_buffer for {self.n_frame_stack} n_frame_stacks")
+        # print(f"Reset_buffer for {self.n_frame_stack} n_frame_stacks")
         for _ in range(self.n_frame_stack):
             self.state_buffer.append(torch.zeros(84, 84, device=self.device))
 
@@ -48,16 +48,16 @@ class CuleEnv(gym.Env):
             return obs
         obs, _, done, _ = self.step(1)
         if done:
-            print(f"done after step 1")
+            # print(f"done after step 1")
             self.reset_no_fire()
         obs, _, done, _ = self.step(2)
         if done:
-            print(f"done after step 2")
+            # print(f"done after step 2")
             self.reset_no_fire()
         return obs
 
     def reset_no_fire(self):
-        print(f"Reset_no_fire for {self.n_frame_stack} n_frame_stacks")
+        # print(f"Reset_no_fire for {self.n_frame_stack} n_frame_stacks")
         obs = torch.zeros(84, 84, device=self.device)
         if self.life_termination:
             self.life_termination = False  # Reset flag
