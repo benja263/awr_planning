@@ -21,14 +21,14 @@ from policies.actor_critic_depth0 import ActorCriticCnnPolicyDepth0
 from callbacks import WandbTrainingCallback
 from utils import create_parser, set_seed
 
-from memory_profiler import profile
+# from memory_profiler import profile
 
 # from wandb.integration.sb3 import WandbCallback
 if sys.gettrace() is not None:
     os.environ["WANDB_MODE"] = "dryrun"
 # os.environ["WANDB_BASE_URL"] = "http://api.wandb.ai"
 
-@profile
+# @profile
 def main():
     # Input arguments
     parser = create_parser()
