@@ -45,6 +45,9 @@ class WandbTrainingCallback(BaseCallback):
             wandb.log({"train\episodic_reward": self.total_rewards}, step=cur_step)
             wandb.log({"train\episodic_length": self.episode_length}, step=cur_step)
             wandb.log({"num_steps": self.model.num_timesteps}, step=cur_step)
+            wandb.log({"timestep2obs_dict_size": len(self.locals["self"].policy.timestep2obs_dict)}, step=cur_step)
+            wandb.log({"obs2timestep_dict_size": len(self.locals["self"].policy.obs2timestep_dict)}, step=cur_step)
+            wandb.log({"obs2leaves_dict_size": len(self.locals["self"].policy.obs2leaves_dict)}, step=cur_step)
             grad_var = 0
             for param_name in self.locals["self"].policy.gradients_history:
                 param_value = self.locals["self"].policy.gradients_history[param_name]
