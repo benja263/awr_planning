@@ -9,7 +9,7 @@ from stable_baselines3.common.utils import get_device
 # Internals
 from policies.actor_critic_depth0 import ActorCriticCnnPolicyDepth0
 from policies.cule_bfs import CuleBFS
-from utils import add_regularization_logits
+from utils import add_regularization_logits, DequeDict
 
 
 class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
@@ -18,9 +18,9 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         super(ActorCriticCnnTSPolicy, self).__init__(observation_space, action_space, lr_schedule, **kwargs)
         self.cule_bfs = CuleBFS(step_env, tree_depth, gamma, self.compute_value, max_width)
         self.time_step = 0
-        self.obs2leaves_dict = {}
-        self.timestep2obs_dict = {}
-        self.obs2timestep_dict = {}
+        self.obs2leaves_dict = DequeDict(max_size=buffer_size)
+        self.timestep2obs_dict = DequeDict(max_size=buffer_size)
+        self.obs2timestep_dict = DequeDict(max_size=buffer_size)
         self.buffer_size = buffer_size
         self.learn_alpha = learn_alpha
         self.learn_beta = learn_beta
@@ -56,7 +56,6 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         else:
             leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs, self.cule_bfs.max_depth)
             self.obs2leaves_dict[hash_obs] = leaves_observations.cpu(), rewards.cpu(), first_action if first_action is None else first_action.cpu()
-            # self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
         self.obs2timestep_dict[hash_obs] = self.time_step
         self.timestep2obs_dict[self.time_step] = hash_obs
         # Preprocess the observation if needed
@@ -101,12 +100,12 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
         distribution = self.actor.action_dist.proba_distribution(action_logits=mean_actions_logits)
         actions = distribution.get_actions(deterministic=deterministic)
         log_prob = distribution.log_prob(actions)
-        if self.time_step - self.buffer_size in self.timestep2obs_dict:
-            if self.timestep2obs_dict[self.time_step - self.buffer_size] in self.obs2leaves_dict: 
-                del self.obs2leaves_dict[self.timestep2obs_dict[self.time_step - self.buffer_size]]
-            if self.timestep2obs_dict[self.time_step - self.buffer_size] in self.obs2timestep_dict: 
-                del self.obs2timestep_dict[self.timestep2obs_dict[self.time_step - self.buffer_size]]
-            del self.timestep2obs_dict[self.time_step - self.buffer_size]
+        # if self.time_step - self.buffer_size in self.timestep2obs_dict:
+        #     if self.timestep2obs_dict[self.time_step - self.buffer_size] in self.obs2leaves_dict: 
+        #         del self.obs2leaves_dict[self.timestep2obs_dict[self.time_step - self.buffer_size]]
+        #     if self.timestep2obs_dict[self.time_step - self.buffer_size] in self.obs2timestep_dict: 
+        #         del self.obs2timestep_dict[self.timestep2obs_dict[self.time_step - self.buffer_size]]
+        #     del self.timestep2obs_dict[self.time_step - self.buffer_size]
         self.time_step += 1
         # print(f"actions: {actions} shape: {actions.shape}, value_root: {value_root}")
         return actions, value_root, log_prob
@@ -138,7 +137,6 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             else:
                 print("This should not happen! observation not in our dictionary")
                 leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs[i], self.cule_bfs.max_depth)
-                # self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
                 self.obs2leaves_dict[hash_obs] = leaves_observations.cpu(), rewards.cpu(), first_action if first_action is None else first_action.cpu()
             all_leaves_obs.append(leaves_observations)
             all_rewards.append(rewards)
@@ -245,7 +243,6 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
                 leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs[i], self.cule_bfs.max_depth)
                 # first_action = first_action if first_action is None else first_action.cpu()
                 self.obs2leaves_dict[hash_obs] = leaves_observations.cpu(), rewards.cpu(), first_action if first_action is None else first_action.cpu()
-                # self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
                 self.obs2timestep_dict[hash_obs] = self.time_step
                 self.timestep2obs_dict[self.time_step] = hash_obs
                 self.time_step += 1

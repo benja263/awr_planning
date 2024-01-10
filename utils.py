@@ -4,6 +4,38 @@ import torch.backends.cudnn
 import numpy as np
 import random
 
+from collections import deque
+
+class DequeDict:
+    def __init__(self, max_size):
+        self.max_size = max_size
+        self.d = {}
+        self.keys = deque()
+
+    def __setitem__(self, key, value):
+        if key not in self.d:
+            if len(self.keys) == self.max_size:
+                oldest_key = self.keys.popleft()
+                del self.d[oldest_key]
+            self.keys.append(key)
+        self.d[key] = value
+
+    def __getitem__(self, key):
+        return self.d[key]
+
+    def __delitem__(self, key):
+        self.d.pop(key)
+        self.keys.remove(key)
+
+    def __len__(self):
+        return len(self.d)
+
+    def __iter__(self):
+        return iter(self.d)
+
+    def __repr__(self):
+        return repr(self.d)
+    
 
 def set_seed(seed):
     """for reproducibility
