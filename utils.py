@@ -27,6 +27,9 @@ class DequeDict:
         self.d.pop(key)
         self.keys.remove(key)
 
+    def __contains__(self, key):
+        return key in self.d
+
     def get(self, key, default=None):
         return self.d.get(key, default)
 
