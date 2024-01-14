@@ -17,7 +17,9 @@ parameters:
   actor_lr:
     value: 5.0e-3
   buffer_size:
-    value: 100000
+    value: 1000000
+  hash_buffer_size:
+    value: 1000
   env_name:
     values: ['AlienNoFrameskip-v4',
       'AmidarNoFrameskip-v4',

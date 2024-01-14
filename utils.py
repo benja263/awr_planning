@@ -124,7 +124,7 @@ def create_parser():
     # experiment_type examples: Runtime_optimization, Debug, Paper_main, Ablation, Hyperparameter_sweep
     parser.add_argument("--experiment_description", type=str, default="",
                         help="Free text to describe experiment sub-goal")
-    parser.add_argument("--hash_buffer_size", type=int, default=10000, help="Size of buffer which stores leaf values")
+    parser.add_argument("--hash_buffer_size", type=int, default=1000, help="Size of buffer which stores leaf values")
     parser.add_argument("--buffer_size", type=int, default=1000000, help="Size of buffer which stores leaf values")
     parser.add_argument("--use_leaves_v", type=str2bool, nargs="?", const=True, default=False,
                         help="Whether to use the value at the leaves or reward only")
