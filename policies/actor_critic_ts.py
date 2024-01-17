@@ -58,6 +58,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs, self.cule_bfs.max_depth)
             # print(f'new obs.shape {obs.shape} leaves_observations.shape: {leaves_observations.shape}, rewards.shape: {rewards.shape}, first_action.shape: {first_action.shape if first_action is not None else None} ')
             # self.obs2leaves_dict[hash_obs] = leaves_observations.cpu(), rewards.cpu(), first_action if first_action is None else first_action.cpu()
+            self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
         self.obs2timestep_dict[hash_obs] = self.time_step
         self.timestep2obs_dict[self.time_step] = hash_obs
         # Preprocess the observation if needed
@@ -139,6 +140,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             else:
                 print("This should not happen! observation not in our dictionary")
                 leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs[i], self.cule_bfs.max_depth)
+                self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
                 # self.obs2leaves_dict[hash_obs] = leaves_observations.cpu(), rewards.cpu(), first_action if first_action is None else first_action.cpu()
             all_leaves_obs.append(leaves_observations)
             all_rewards.append(rewards)
@@ -245,6 +247,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
                 leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs[i], self.cule_bfs.max_depth)
                 # first_action = first_action if first_action is None else first_action.cpu()
                 # self.obs2leaves_dict[hash_obs] = leaves_observations.cpu(), rewards.cpu(), first_action if first_action is None else first_action.cpu()
+                self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
                 self.obs2timestep_dict[hash_obs] = self.time_step
                 self.timestep2obs_dict[self.time_step] = hash_obs
                 self.time_step += 1
