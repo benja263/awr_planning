@@ -138,7 +138,7 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
                 leaves_observations, rewards, first_action = self.obs2leaves_dict.get(hash_obs)
                 # leaves_observations, rewards, first_action = leaves_observations.to(obs.device), rewards.to(obs.device),  first_action if first_action is None else first_action.to(obs.device)
             else:
-                print("This should not happen! observation not in our dictionary")
+                #print("This should not happen! observation not in our dictionary")
                 leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs[i], self.cule_bfs.max_depth)
                 self.obs2leaves_dict[hash_obs] = leaves_observations, rewards, first_action
                 # self.obs2leaves_dict[hash_obs] = leaves_observations.cpu(), rewards.cpu(), first_action if first_action is None else first_action.cpu()
