@@ -42,7 +42,7 @@ def main():
         current_device = torch.cuda.current_device()
         print(f"Current CUDA device index: {current_device}")
         print(f"Current CUDA device name: {torch.cuda.get_device_name(current_device)}")
-        device = torch.cuda.get_device_name(current_device)
+        device = f'cuda:{current_device}'
     else:
         print("CUDA is not available.")
 
