@@ -35,13 +35,14 @@ def main():
     wandb.init(config=parser.parse_args(), project="pg-tree")
     config = wandb.config
 
-    
+    device ='cpu'
     # Check if CUDA is available
     if torch.cuda.is_available():
         # Get the current default CUDA device
         current_device = torch.cuda.current_device()
         print(f"Current CUDA device index: {current_device}")
         print(f"Current CUDA device name: {torch.cuda.get_device_name(current_device)}")
+        device = torch.cuda.get_device_name(current_device)
     else:
         print("CUDA is not available.")
 
@@ -76,7 +77,7 @@ def main():
         policy_kwargs = {
                 'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr}}
     
-        model = AWR(policy=ActorCriticCnnPolicyDepth0, env=env, verbose=2, **AWR_params, policy_kwargs=policy_kwargs)
+        model = AWR(policy=ActorCriticCnnPolicyDepth0, env=env, verbose=2, device=device, **AWR_params, policy_kwargs=policy_kwargs)
     else:        # Hash buffer saves previous states and their trees for reuse in evaluate_actions
         hash_buffer_size = max(config.hash_buffer_size, AWR_params["n_steps"])
         max_width = int(config.max_width / env.action_space.n) if config.max_width != -1 else -1
@@ -86,7 +87,7 @@ def main():
                 'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr},
                 "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
         # Input max width sets the maximum number of environments, since the leaves are opened we divide it here to match
-        model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=2, policy_kwargs=policy_kwargs, device=current_device, **AWR_params)
+        model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=2, policy_kwargs=policy_kwargs, device=device, **AWR_params)
     # save agent folder and name
     saved_agents_dir = "saved_agents"
     if config.run_type == "train":
