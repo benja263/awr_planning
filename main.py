@@ -86,7 +86,7 @@ def main():
                 'hack_optimizer_kwargs': {'actor_lr': config.actor_lr, 'critic_lr': config.critic_lr},
                 "is_cumulative_mode": config.is_cumulative_mode, "regularization": config.regularization}
         # Input max width sets the maximum number of environments, since the leaves are opened we divide it here to match
-        model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=2, policy_kwargs=policy_kwargs, **AWR_params)
+        model = AWR(policy=ActorCriticCnnTSPolicy, env=env, verbose=2, policy_kwargs=policy_kwargs, device=current_device, **AWR_params)
     # save agent folder and name
     saved_agents_dir = "saved_agents"
     if config.run_type == "train":
