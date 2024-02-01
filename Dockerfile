@@ -1,7 +1,6 @@
 FROM nvcr.io/nvidian/pytorch:20.12-py3 as base
 RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
-RUN apt-get install ffmpeg libsm6 libxext6 libxrender-dev -y
+RUN apt-get install ffmpeg libsm6 libxext6 libxrender-dev -y --fix-missing
 RUN pip install atari_py
 RUN pip install wandb plotly
 RUN git clone --recursive https://github.com/NVLabs/cule -b bfs
