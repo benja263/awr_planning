@@ -52,8 +52,8 @@ class ActorCriticCnnTSPolicy(ActorCriticCnnPolicyDepth0):
             leaves_observations, rewards, first_action = self.obs2leaves_dict.get(hash_obs)
             # print(f'already inside leaves_observations.shape: {leaves_observations.shape}, rewards.shape: {rewards.shape}, first_action.shape: {first_action.shape if first_action is not None else None} ')
             # leaves_observations, rewards, first_action = leaves_observations.to(obs.device), rewards.to(obs.device), first_action if first_action is None else first_action.to(obs.device)
-            if hash_obs in self.timestep2obs_dict:
-                del self.timestep2obs_dict[self.obs2timestep_dict[hash_obs]]
+            # if hash_obs in self.timestep2obs_dict:
+            #     del self.timestep2obs_dict[self.obs2timestep_dict[hash_obs]]
         else:
             leaves_observations, rewards, first_action = self.cule_bfs.bfs(obs, self.cule_bfs.max_depth)
             # print(f'new obs.shape {obs.shape} leaves_observations.shape: {leaves_observations.shape}, rewards.shape: {rewards.shape}, first_action.shape: {first_action.shape if first_action is not None else None} ')
