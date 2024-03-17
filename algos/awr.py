@@ -147,6 +147,7 @@ class AWR(OffPolicyAlgorithm):
         (gradient descent and update target networks)
         """
          # Switch to train mode (this affects batch norm / dropout)
+        th.backends.cudnn.benchmark = True
         self.policy.set_training_mode(True)
         # print('training')
         env = self.env if isinstance(self.env, VecNormalize) else None 
@@ -155,18 +156,19 @@ class AWR(OffPolicyAlgorithm):
         observations = observations[:self.replay_buffer.valid_pos]
         next_observations = next_observations[:self.replay_buffer.valid_pos]
 
-        if self.reward_mode == 'gae':
-            values, next_values = self.get_values(observations, next_observations)
-            self.replay_buffer.add_advantages_returns(values, next_values, env=self._vec_normalize_env)
+        with th.autocast(device_type="cuda"):
+            if self.reward_mode == 'gae':
+                values, next_values = self.get_values(observations, next_observations)
+                self.replay_buffer.add_advantages_returns(values, next_values, env=self._vec_normalize_env)
 
         value_losses = []
         for gradient_step in range(self.value_gradient_steps):
             # Sample replay buffer
             replay_data = self.replay_buffer.sample(batch_size, env=self._vec_normalize_env)  # type: ignore[union-attr]
+            with th.autocast(device_type="cuda"):
+                pred_values = self.policy.predict_values(replay_data.observations)
 
-            pred_values = self.policy.predict_values(replay_data.observations)
-
-            value_loss = 0.5*F.mse_loss(pred_values.squeeze(), replay_data.returns.squeeze())
+                value_loss = 0.5*F.mse_loss(pred_values.squeeze(), replay_data.returns.squeeze())
             self.policy.critic.optimizer.zero_grad()
             value_loss.backward()
             if self.max_grad_norm > 0.0:
@@ -200,10 +202,10 @@ class AWR(OffPolicyAlgorithm):
 
             weights = th.exp(advantages / self.beta)
             weights = th.clamp(weights, max=self.weights_max)
+            with th.autocast(device_type="cuda"):
+                log_prob, entropy = self.policy.evaluate_actions(replay_data.observations, actions)
 
-            log_prob, entropy = self.policy.evaluate_actions(replay_data.observations, actions)
-
-            policy_loss = -(log_prob*weights).mean() - self.ent_coef*th.mean(entropy)
+                policy_loss = -(log_prob*weights).mean() - self.ent_coef*th.mean(entropy)
 
             if self.policy_bound_loss_weight > 0 and isinstance(self.action_space, spaces.Box):
                 distrib = self.policy.actor.get_distribution(replay_data.observations)
